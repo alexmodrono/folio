@@ -14,8 +14,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var settingsController: SettingsWindowController?
     private var pendingURLs: [URL] = []
 
+    /// True while the app is only hosting unit tests: no windows, no web views, no debug commands.
+    static let isHostingTests = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         Preferences.registerDefaults()
+        if Self.isHostingTests { return }
         #if DEBUG
         DebugHooks.install()
         #endif

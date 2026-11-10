@@ -60,11 +60,16 @@ final class QuestionStore {
     private(set) var questions: [AskedQuestion] = []
     private let file: URL
 
-    private init() {
+    private convenience init() {
         let support = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("Folio", isDirectory: true)
         try? FileManager.default.createDirectory(at: support, withIntermediateDirectories: true)
-        file = support.appendingPathComponent("questions.json")
+        self.init(file: support.appendingPathComponent("questions.json"))
+    }
+
+    /// A store backed by `file`. The app uses `shared`; tests pass a temporary file.
+    init(file: URL) {
+        self.file = file
         if let data = try? Data(contentsOf: file) {
             questions = (try? JSONDecoder().decode([AskedQuestion].self, from: data)) ?? []
         }
