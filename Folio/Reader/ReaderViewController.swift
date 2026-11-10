@@ -14,12 +14,12 @@ final class ReaderPDFView: PDFView {
         let menu = super.menu(for: event) ?? NSMenu()
         var items: [NSMenuItem] = []
         if let text = currentSelection?.string, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            items.append(NSMenuItem(title: "Ask ChatGPT", action: #selector(MainWindowController.askAboutSelection(_:)), keyEquivalent: ""))
+            items.append(NSMenuItem(title: String(localized: "Ask ChatGPT"), action: #selector(MainWindowController.askAboutSelection(_:)), keyEquivalent: ""))
         }
         let point = convert(event.locationInWindow, from: nil)
         if let document, let page = page(for: point, nearest: false) {
             let index = document.index(for: page)
-            let item = NSMenuItem(title: "Ask ChatGPT About Page \(index + 1)", action: #selector(MainWindowController.askAboutPage(_:)), keyEquivalent: "")
+            let item = NSMenuItem(title: String(localized: "Ask ChatGPT About Page \(index + 1)"), action: #selector(MainWindowController.askAboutPage(_:)), keyEquivalent: "")
             item.representedObject = index
             items.append(item)
             if let questions = questionItems?(index), !questions.isEmpty {
@@ -152,7 +152,7 @@ final class ReaderViewController: NSViewController {
                 loadDocument()
                 onStateChange?()
             } else {
-                failureLabel.stringValue = "This file couldn’t be downloaded."
+                failureLabel.stringValue = String(localized: "This file couldn’t be downloaded.")
                 failureLabel.isHidden = false
             }
         }
@@ -160,12 +160,12 @@ final class ReaderViewController: NSViewController {
 
     private func loadDocument() {
         guard let document = PDFDocument(url: url) else {
-            failureLabel.stringValue = "This file can’t be opened."
+            failureLabel.stringValue = String(localized: "This file can’t be opened.")
             failureLabel.isHidden = false
             return
         }
         if document.isLocked, !unlock(document) {
-            failureLabel.stringValue = "This PDF is locked."
+            failureLabel.stringValue = String(localized: "This PDF is locked.")
             failureLabel.isHidden = false
             return
         }
@@ -202,11 +202,11 @@ final class ReaderViewController: NSViewController {
 
     var statusText: String {
         if !lastQuery.isEmpty {
-            if matches.isEmpty { return "No matches" }
-            return "\(matchIndex + 1) of \(matches.count) matches"
+            if matches.isEmpty { return String(localized: "No matches") }
+            return String(localized: "\(matchIndex + 1) of \(matches.count) matches", comment: "Find status: current match of total")
         }
         guard let document = pdfView.document, let page = pdfView.currentPage else { return "" }
-        return "Page \(document.index(for: page) + 1) of \(document.pageCount)"
+        return String(localized: "Page \(document.index(for: page) + 1) of \(document.pageCount)")
     }
 
     var hasSelection: Bool {
@@ -321,7 +321,7 @@ final class ReaderViewController: NSViewController {
 
     /// "Questions on This Page", holding `items`.
     static func questionsSubmenuItem(_ items: [NSMenuItem]) -> NSMenuItem {
-        let item = NSMenuItem(title: "Questions on This Page", action: nil, keyEquivalent: "")
+        let item = NSMenuItem(title: String(localized: "Questions on This Page"), action: nil, keyEquivalent: "")
         let menu = NSMenu(title: item.title)
         items.forEach(menu.addItem)
         item.submenu = menu
@@ -329,7 +329,7 @@ final class ReaderViewController: NSViewController {
     }
 
     private static func menuTitle(for question: AskedQuestion) -> String {
-        if question.anchor.isWholePage { return "Page \(question.anchor.page + 1)" }
+        if question.anchor.isWholePage { return String(localized: "Page \(question.anchor.page + 1)") }
         let quote = question.quote.split(whereSeparator: \.isWhitespace).joined(separator: " ")
         return quote.count > 48 ? "“\(quote.prefix(48))…”" : "“\(quote)”"
     }
@@ -386,17 +386,17 @@ final class ReaderViewController: NSViewController {
 
     private func unlock(_ document: PDFDocument) -> Bool {
         let alert = NSAlert()
-        alert.messageText = "“\(url.deletingPathExtension().lastPathComponent)” is locked"
-        alert.informativeText = "Enter the password to open it."
+        alert.messageText = String(localized: "“\(url.deletingPathExtension().lastPathComponent)” is locked", comment: "File name")
+        alert.informativeText = String(localized: "Enter the password to open it.")
         let field = NSSecureTextField(frame: NSRect(x: 0, y: 0, width: 240, height: 24))
         alert.accessoryView = field
-        alert.addButton(withTitle: "Open")
-        alert.addButton(withTitle: "Cancel")
+        alert.addButton(withTitle: String(localized: "Open"))
+        alert.addButton(withTitle: String(localized: "Cancel"))
         alert.window.initialFirstResponder = field
         while alert.runModal() == .alertFirstButtonReturn {
             if document.unlock(withPassword: field.stringValue) { return true }
             field.stringValue = ""
-            alert.informativeText = "That password didn’t work. Try again."
+            alert.informativeText = String(localized: "That password didn’t work. Try again.")
         }
         return false
     }
@@ -440,12 +440,12 @@ final class ReaderViewController: NSViewController {
     func goToPage() {
         guard let document = pdfView.document, let window = view.window else { return }
         let alert = NSAlert()
-        alert.messageText = "Go to Page"
+        alert.messageText = String(localized: "Go to Page")
         let field = NSTextField(frame: NSRect(x: 0, y: 0, width: 120, height: 24))
         field.placeholderString = "1–\(document.pageCount)"
         alert.accessoryView = field
-        alert.addButton(withTitle: "Go")
-        alert.addButton(withTitle: "Cancel")
+        alert.addButton(withTitle: String(localized: "Go", comment: "Go to Page button"))
+        alert.addButton(withTitle: String(localized: "Cancel"))
         alert.window.initialFirstResponder = field
         alert.beginSheetModal(for: window) { [weak self] response in
             guard response == .alertFirstButtonReturn, let self,

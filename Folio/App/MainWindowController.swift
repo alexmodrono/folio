@@ -190,7 +190,7 @@ final class MainWindowController: NSWindowController {
         guard let window else { return }
         switch route {
         case .library(nil):
-            window.title = "Home"
+            window.title = String(localized: "Home")
             window.representedURL = nil
             header.subtitleLabel.stringValue = ""
         case .library(let url?):
@@ -300,7 +300,7 @@ final class MainWindowController: NSWindowController {
         panel.allowedContentTypes = [.pdf]
         panel.allowsMultipleSelection = true
         panel.canChooseDirectories = false
-        panel.prompt = "Import"
+        panel.prompt = String(localized: "Import", comment: "Import panel button")
         let folder = targetFolderURL
         panel.beginSheetModal(for: window) { [weak self] response in
             guard response == .OK else { return }
@@ -391,7 +391,7 @@ extension MainWindowController: NSMenuItemValidation {
     func validateMenuItem(_ item: NSMenuItem) -> Bool {
         switch item.action {
         case #selector(toggleChat(_:)):
-            item.title = split.isChatVisible ? "Hide Chat" : "Show Chat"
+            item.title = split.isChatVisible ? String(localized: "Hide Chat") : String(localized: "Show Chat")
             return isReading
         case #selector(askAboutSelection(_:)):
             return isReading && reader?.hasSelection == true
@@ -408,7 +408,7 @@ extension MainWindowController: NSMenuItemValidation {
             return isReading
         case #selector(toggleFavorite(_:)):
             guard let url = currentDocumentURL, store.node(at: url) != nil else { return false }
-            item.title = store.isFavorite(url) ? "Remove from Favorites" : "Add to Favorites"
+            item.title = store.isFavorite(url) ? String(localized: "Remove from Favorites") : String(localized: "Add to Favorites")
             return true
         case #selector(attachDocument(_:)), #selector(newChat(_:)),
              #selector(readerZoomIn(_:)), #selector(readerZoomOut(_:)), #selector(readerActualSize(_:)),
@@ -419,7 +419,7 @@ extension MainWindowController: NSMenuItemValidation {
         case #selector(newFolder(_:)), #selector(importDocuments(_:)):
             return !isInMoodleFolder
         case #selector(toggleSidebar(_:)):
-            item.title = split.splitViewItems.first?.isCollapsed == true ? "Show Sidebar" : "Hide Sidebar"
+            item.title = split.splitViewItems.first?.isCollapsed == true ? String(localized: "Show Sidebar") : String(localized: "Hide Sidebar")
             return true
         default:
             return true
@@ -457,13 +457,13 @@ extension MainWindowController: NSToolbarDelegate {
         willBeInsertedIntoToolbar flag: Bool
     ) -> NSToolbarItem? {
         guard identifier == .sidebar else { return nil }
-        let image = NSImage(systemSymbolName: "sidebar.left", accessibilityDescription: "Sidebar")!
+        let image = NSImage(systemSymbolName: "sidebar.left", accessibilityDescription: String(localized: "Sidebar"))!
         let button = NSButton(image: image, target: self, action: #selector(toggleSidebar(_:)))
         button.bezelStyle = .toolbar
-        button.toolTip = "Sidebar"
+        button.toolTip = String(localized: "Sidebar")
         let item = NSToolbarItem(itemIdentifier: identifier)
         item.view = button
-        item.label = "Sidebar"
+        item.label = String(localized: "Sidebar")
         // The content header measures this button to stay clear of it when the sidebar is collapsed.
         split.content.sidebarButton = button
         return item

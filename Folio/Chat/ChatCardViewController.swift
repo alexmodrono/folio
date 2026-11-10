@@ -8,8 +8,8 @@ final class ChatCardViewController: NSViewController {
     private let card = CardView()
     private var body: CardBody { card.body }
     private let titleLabel = NSTextField(labelWithString: "ChatGPT")
-    private let addButton = CardHeaderButton(symbol: "plus", label: "Add Chat")
-    private let closeButton = CardHeaderButton(symbol: "xmark", label: "Hide Chat")
+    private let addButton = CardHeaderButton(symbol: "plus", label: String(localized: "Add Chat"))
+    private let closeButton = CardHeaderButton(symbol: "xmark", label: String(localized: "Hide Chat"))
     private var titleObservation: NSKeyValueObservation?
     private var importView: NSView?
     private let noticeLabel = NSTextField(wrappingLabelWithString: "")
@@ -87,7 +87,7 @@ final class ChatCardViewController: NSViewController {
         titleLabel.stringValue = session.title ?? "ChatGPT"
         body.isHighlighted = cards > 1 && session.isActive
         addButton.isEnabled = cards < ChatGPTSession.maxCards
-        let closeLabel = cards > 1 ? "Close Chat" : "Hide Chat"
+        let closeLabel = cards > 1 ? String(localized: "Close Chat") : String(localized: "Hide Chat")
         closeButton.toolTip = closeLabel
         closeButton.setAccessibilityLabel(closeLabel)
     }
@@ -104,7 +104,7 @@ final class ChatCardViewController: NSViewController {
         noticeLabel.textColor = .secondaryLabelColor
         noticeLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
 
-        let report = NSButton(title: "Report a Problem", target: nil, action: NSSelectorFromString("reportProblem:"))
+        let report = NSButton(title: String(localized: "Report a Problem"), target: nil, action: NSSelectorFromString("reportProblem:"))
         report.controlSize = .small
         report.bezelStyle = .push
         report.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
@@ -146,9 +146,9 @@ final class ChatCardViewController: NSViewController {
     private func updateNotice() {
         let missing = session.missingParts
         if missing.contains("composer") {
-            noticeLabel.stringValue = "Folio can't find ChatGPT's message box, so it can't add your PDF or selections."
+            noticeLabel.stringValue = String(localized: "Folio can’t find ChatGPT’s message box, so it can’t add your PDF or selections.")
         } else {
-            noticeLabel.stringValue = "Folio can't fully work with this version of ChatGPT. Selections are pasted as text."
+            noticeLabel.stringValue = String(localized: "Folio can’t fully work with this version of ChatGPT. Selections are pasted as text.")
         }
         let show = !missing.isEmpty
         guard notice.isHidden == show else { return }
@@ -167,10 +167,10 @@ final class ChatCardViewController: NSViewController {
 
         addButton.target = self
         addButton.action = #selector(addCard(_:))
-        let newChat = CardHeaderButton(symbol: "square.and.pencil", label: "New Chat")
+        let newChat = CardHeaderButton(symbol: "square.and.pencil", label: String(localized: "New Chat"))
         newChat.target = self
         newChat.action = #selector(newChat(_:))
-        let more = CardHeaderButton(symbol: "ellipsis", label: "More")
+        let more = CardHeaderButton(symbol: "ellipsis", label: String(localized: "More"))
         more.target = self
         more.action = #selector(showMore(_:))
         closeButton.target = self
@@ -218,14 +218,14 @@ final class ChatCardViewController: NSViewController {
     @objc private func showMore(_ sender: NSButton) {
         session.focus()
         let menu = NSMenu()
-        menu.addItem(withTitle: "Attach PDF", action: #selector(MainWindowController.attachDocument(_:)), keyEquivalent: "")
+        menu.addItem(withTitle: String(localized: "Attach PDF"), action: #selector(MainWindowController.attachDocument(_:)), keyEquivalent: "")
         menu.addItem(.separator())
         if let panel = parent as? ChatPanelViewController {
-            let layout = menu.addItem(withTitle: "Show Chats Side by Side", action: #selector(toggleSideBySide(_:)), keyEquivalent: "")
+            let layout = menu.addItem(withTitle: String(localized: "Show Chats Side by Side"), action: #selector(toggleSideBySide(_:)), keyEquivalent: "")
             layout.target = self
             layout.state = panel.isSideBySide ? .on : .off
         }
-        let reload = menu.addItem(withTitle: "Reload", action: #selector(reloadChat(_:)), keyEquivalent: "")
+        let reload = menu.addItem(withTitle: String(localized: "Reload"), action: #selector(reloadChat(_:)), keyEquivalent: "")
         reload.target = self
         menu.popUp(positioning: nil, at: NSPoint(x: 0, y: sender.bounds.maxY + Theme.Space.xs), in: sender)
     }

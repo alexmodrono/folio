@@ -170,16 +170,16 @@ struct SessionImportView: View {
 
     private var note: String? {
         guard let session = model.selected else { return nil }
-        if !session.isReadable { return "Folio needs Full Disk Access to read Safari's sign-in." }
+        if !session.isReadable { return String(localized: "Folio needs Full Disk Access to read Safari’s sign-in.") }
         if let item = session.keychainItem {
-            return "Your Mac will ask for your password to let Folio use “\(item)”."
+            return String(localized: "Your Mac will ask for your password to let Folio use “\(item)”.", comment: "Keychain item name")
         }
         return nil
     }
 
     @ViewBuilder
     private var buttons: some View {
-        let dismissTitle = style == .panel ? "Sign In Manually" : "Cancel"
+        let dismissTitle: LocalizedStringKey = style == .panel ? "Sign In Manually" : "Cancel"
         switch style {
         case .panel:
             VStack(spacing: Theme.Space.s) {
@@ -213,7 +213,7 @@ struct SessionImportView: View {
                     if await model.importSelected() { onFinish(true) }
                 }
             } label: {
-                Text(model.selected.map { "Continue with \($0.browserName)" } ?? "Continue")
+                Text(model.selected.map { String(localized: "Continue with \($0.browserName)", comment: "Browser name") } ?? String(localized: "Continue"))
                     .frame(maxWidth: style == .panel ? .infinity : nil)
             }
             .keyboardShortcut(.defaultAction)
@@ -223,7 +223,7 @@ struct SessionImportView: View {
 
     private func row(for session: BrowserSession) -> some View {
         let isSelected = session.id == model.selection
-        let detail = session.isReadable ? Self.detail(for: session) : "Needs Full Disk Access"
+        let detail = session.isReadable ? Self.detail(for: session) : String(localized: "Needs Full Disk Access")
         return Button {
             model.selection = session.id
             model.error = nil
@@ -262,7 +262,7 @@ struct SessionImportView: View {
         let used = session.lastUsed.map { date in
             let formatter = RelativeDateTimeFormatter()
             formatter.unitsStyle = .full
-            return "Used " + formatter.localizedString(for: date, relativeTo: .now)
+            return String(localized: "Used \(formatter.localizedString(for: date, relativeTo: .now))", comment: "When a browser last used ChatGPT, e.g. “Used 2 days ago”")
         }
         let parts = [session.profileName, used].compactMap(\.self)
         return parts.isEmpty ? nil : parts.joined(separator: ", ")

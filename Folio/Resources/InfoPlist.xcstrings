@@ -1,0 +1,60 @@
+{
+  "sourceLanguage" : "en",
+  "version" : "1.0",
+  "strings" : {
+    "NSMicrophoneUsageDescription" : {
+      "comment" : "Microphone permission prompt",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ChatGPT voice input uses the microphone."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La entrada de voz de ChatGPT usa el micrófono."
+          }
+        }
+      }
+    },
+    "NSHumanReadableCopyright" : {
+      "comment" : "About window",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Folio is not affiliated with, endorsed or sponsored by OpenAI. ChatGPT is a trademark of OpenAI."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Folio no está afiliado a OpenAI ni cuenta con su respaldo o patrocinio. ChatGPT es una marca comercial de OpenAI."
+          }
+        }
+      }
+    },
+    "PDF Document" : {
+      "comment" : "Document type name (CFBundleTypeName)",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PDF Document"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Documento PDF"
+          }
+        }
+      }
+    }
+  }
+}

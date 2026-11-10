@@ -93,11 +93,11 @@ nonisolated enum SessionImportError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .keychainDenied(let item): "Folio wasn't allowed to use “\(item)”."
-        case .keychain(let status): "The browser's keychain item couldn't be read (\(status))."
-        case .unreadable: "The browser's cookies couldn't be read."
-        case .notSignedIn: "That browser isn't signed in to ChatGPT anymore."
-        case .expired(let browser): "\(browser)'s ChatGPT sign-in has expired. Open chatgpt.com in \(browser), then try again."
+        case .keychainDenied(let item): String(localized: "Folio wasn’t allowed to use “\(item)”.", comment: "Keychain item name")
+        case .keychain(let status): String(localized: "The browser’s keychain item couldn’t be read (\(status)).", comment: "Error code")
+        case .unreadable: String(localized: "The browser’s cookies couldn’t be read.")
+        case .notSignedIn: String(localized: "That browser isn’t signed in to ChatGPT anymore.")
+        case .expired(let browser): String(localized: "\(browser)’s ChatGPT sign-in has expired. Open chatgpt.com in \(browser), then try again.", comment: "Browser name, twice")
         }
     }
 }

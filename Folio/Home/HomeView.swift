@@ -195,7 +195,7 @@ struct HomeView: View {
 }
 
 private struct TabPill: View {
-    let title: String
+    let title: LocalizedStringKey
     let isSelected: Bool
     let action: () -> Void
 

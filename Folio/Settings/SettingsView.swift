@@ -5,7 +5,7 @@ final class SettingsWindowController: NSWindowController {
         let host = NSHostingController(rootView: SettingsView())
         host.sizingOptions = .preferredContentSize
         let window = NSWindow(contentViewController: host)
-        window.title = "Settings"
+        window.title = String(localized: "Settings")
         window.styleMask = [.titled, .closable]
         window.center()
         self.init(window: window)
@@ -111,7 +111,7 @@ struct SettingsView: View {
         let panel = NSOpenPanel()
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
-        panel.prompt = "Use Folder"
+        panel.prompt = String(localized: "Use Folder")
         panel.directoryURL = findle.folderURL ?? Findle.cloudStorage
         guard panel.runModal() == .OK, let url = panel.url else { return }
         findle.choose(url)
@@ -122,7 +122,7 @@ struct SettingsView: View {
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
         panel.canCreateDirectories = true
-        panel.prompt = "Use Folder"
+        panel.prompt = String(localized: "Use Folder")
         panel.directoryURL = LibraryStore.shared.rootURL
         guard panel.runModal() == .OK, let url = panel.url else { return }
         LibraryStore.shared.setRoot(url)

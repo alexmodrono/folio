@@ -78,7 +78,7 @@ final class SidebarViewController: NSViewController {
         scroll.translatesAutoresizingMaskIntoConstraints = false
 
         let settings = NSButton(
-            title: "Settings",
+            title: String(localized: "Settings"),
             image: NSImage(systemSymbolName: "gearshape", accessibilityDescription: nil)!,
             target: nil,
             action: #selector(AppDelegate.showSettings(_:))
@@ -305,9 +305,9 @@ final class SidebarViewController: NSViewController {
         if let reused = outline.makeView(withIdentifier: Self.headerID, owner: self) as? NSTableCellView {
             return reused
         }
-        let newFolder = Self.headerButton(symbol: "folder.badge.plus", help: "New Folder", action: #selector(MainWindowController.newFolder(_:)))
-        let add = Self.headerButton(symbol: "plus", help: "Import PDFs", action: #selector(MainWindowController.importDocuments(_:)))
-        return makeHeader(id: Self.headerID, title: "My documents", buttons: [newFolder, add])
+        let newFolder = Self.headerButton(symbol: "folder.badge.plus", help: String(localized: "New Folder"), action: #selector(MainWindowController.newFolder(_:)))
+        let add = Self.headerButton(symbol: "plus", help: String(localized: "Import PDFs"), action: #selector(MainWindowController.importDocuments(_:)))
+        return makeHeader(id: Self.headerID, title: String(localized: "My documents"), buttons: [newFolder, add])
     }
 
     /// The Moodle header, with a sync button once Findle is connected.
@@ -316,7 +316,7 @@ final class SidebarViewController: NSViewController {
         if let reused = outline.makeView(withIdentifier: Self.moodleHeaderID, owner: self) as? NSTableCellView {
             cell = reused
         } else {
-            let sync = Self.headerButton(symbol: "arrow.triangle.2.circlepath", help: "Sync with Moodle", action: #selector(syncMoodle(_:)))
+            let sync = Self.headerButton(symbol: "arrow.triangle.2.circlepath", help: String(localized: "Sync with Moodle"), action: #selector(syncMoodle(_:)))
             sync.target = self
             cell = makeHeader(id: Self.moodleHeaderID, title: "Moodle", buttons: [sync])
         }
@@ -435,10 +435,10 @@ extension SidebarViewController: NSOutlineViewDelegate {
     }
 
     func outlineView(_ outlineView: NSOutlineView, viewFor tableColumn: NSTableColumn?, item: Any) -> NSView? {
-        if (item as AnyObject) === homeMarker { return makeCell(symbol: "house", title: "Home", editable: false) }
+        if (item as AnyObject) === homeMarker { return makeCell(symbol: "house", title: String(localized: "Home"), editable: false) }
         if (item as AnyObject) === headerMarker { return makeHeader() }
         if (item as AnyObject) === moodleMarker { return makeMoodleHeader() }
-        if (item as AnyObject) === findleMarker { return makeCell(symbol: "graduationcap", title: "Connect Moodle", editable: false) }
+        if (item as AnyObject) === findleMarker { return makeCell(symbol: "graduationcap", title: String(localized: "Connect Moodle"), editable: false) }
         guard let node = item as? LibraryNode else { return nil }
         return makeCell(symbol: node.isFolder ? "folder" : "doc.text", title: node.name, editable: !node.isReadOnly)
     }
@@ -503,35 +503,35 @@ extension SidebarViewController: NSMenuDelegate {
             // Empty space or the "My documents" header: the same two commands as the header's buttons.
             let item = outline.clickedRow >= 0 ? outline.item(atRow: outline.clickedRow) as AnyObject? : nil
             guard item == nil || item === headerMarker else { return }
-            menu.addItem(withTitle: "Import PDFs…", action: #selector(MainWindowController.importDocuments(_:)), keyEquivalent: "")
-            menu.addItem(withTitle: "New Folder", action: #selector(MainWindowController.newFolder(_:)), keyEquivalent: "")
+            menu.addItem(withTitle: String(localized: "Import PDFs…"), action: #selector(MainWindowController.importDocuments(_:)), keyEquivalent: "")
+            menu.addItem(withTitle: String(localized: "New Folder"), action: #selector(MainWindowController.newFolder(_:)), keyEquivalent: "")
             return
         }
-        menu.addItem(withTitle: "Open", action: #selector(openClicked(_:)), keyEquivalent: "").target = self
-        menu.addItem(withTitle: "Show in Finder", action: #selector(showClickedInFinder(_:)), keyEquivalent: "").target = self
+        menu.addItem(withTitle: String(localized: "Open"), action: #selector(openClicked(_:)), keyEquivalent: "").target = self
+        menu.addItem(withTitle: String(localized: "Show in Finder"), action: #selector(showClickedInFinder(_:)), keyEquivalent: "").target = self
         if node.isReadOnly {
             if !node.isFolder {
-                let title = store.isFavorite(node.url) ? "Remove from Favorites" : "Add to Favorites"
+                let title = store.isFavorite(node.url) ? String(localized: "Remove from Favorites") : String(localized: "Add to Favorites")
                 menu.addItem(withTitle: title, action: #selector(toggleClickedFavorite(_:)), keyEquivalent: "").target = self
             }
             menu.addItem(.separator())
             if node.isFolder ? node.allDocuments.contains(where: \.isPlaceholder) : node.isPlaceholder {
-                menu.addItem(withTitle: "Download", action: #selector(downloadClicked(_:)), keyEquivalent: "").target = self
+                menu.addItem(withTitle: String(localized: "Download"), action: #selector(downloadClicked(_:)), keyEquivalent: "").target = self
             }
             if !node.isFolder {
-                menu.addItem(withTitle: "Copy to My Documents", action: #selector(copyClickedToLibrary(_:)), keyEquivalent: "").target = self
+                menu.addItem(withTitle: String(localized: "Copy to My Documents"), action: #selector(copyClickedToLibrary(_:)), keyEquivalent: "").target = self
             }
             if menu.items.last?.isSeparatorItem == true { menu.removeItem(at: menu.items.count - 1) }
             return
         }
         if node.isFolder {
-            menu.addItem(withTitle: "New Folder", action: #selector(newFolderInClicked(_:)), keyEquivalent: "").target = self
+            menu.addItem(withTitle: String(localized: "New Folder"), action: #selector(newFolderInClicked(_:)), keyEquivalent: "").target = self
         } else {
-            let title = store.isFavorite(node.url) ? "Remove from Favorites" : "Add to Favorites"
+            let title = store.isFavorite(node.url) ? String(localized: "Remove from Favorites") : String(localized: "Add to Favorites")
             menu.addItem(withTitle: title, action: #selector(toggleClickedFavorite(_:)), keyEquivalent: "").target = self
         }
-        menu.addItem(withTitle: "Rename", action: #selector(renameClicked(_:)), keyEquivalent: "").target = self
+        menu.addItem(withTitle: String(localized: "Rename"), action: #selector(renameClicked(_:)), keyEquivalent: "").target = self
         menu.addItem(.separator())
-        menu.addItem(withTitle: "Move to Trash", action: #selector(trashClicked(_:)), keyEquivalent: "").target = self
+        menu.addItem(withTitle: String(localized: "Move to Trash"), action: #selector(trashClicked(_:)), keyEquivalent: "").target = self
     }
 }

@@ -47,9 +47,9 @@ private struct PageImage: View {
 }
 
 private func detailText(_ node: LibraryNode, _ preview: DocumentPreview?) -> String {
-    if node.isPlaceholder { return "Not downloaded" }
+    if node.isPlaceholder { return String(localized: "Not downloaded") }
     guard let count = preview?.pageCount, count > 0 else { return " " }
-    return count == 1 ? "1 page" : "\(count) pages"
+    return String(localized: "\(count) pages")
 }
 
 struct DocumentCard: View {
@@ -112,7 +112,7 @@ struct FolderCard: View {
 
     private var itemCount: String {
         let count = node.children.count
-        return count == 1 ? "1 item" : "\(count) items"
+        return String(localized: "\(count) items")
     }
 }
 
@@ -195,7 +195,7 @@ struct DocumentRow: View {
                     .frame(width: 28, height: 36)
                 Text(node.name).font(.body)
                 Spacer()
-                Text(node.children.count == 1 ? "1 item" : "\(node.children.count) items")
+                Text("\(node.children.count) items")
                     .foregroundStyle(.secondary)
             } else {
                 PreviewLoader(node: node) { preview in

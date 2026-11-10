@@ -25,9 +25,9 @@ enum UpdateChecker {
 
         var errorDescription: String? {
             switch self {
-            case .noRepository: "No update source is set."
-            case .status(404): "No release was found."
-            case .status(let code): "The server answered with status \(code)."
+            case .noRepository: String(localized: "No update source is set.")
+            case .status(404): String(localized: "No release was found.")
+            case .status(let code): String(localized: "The server answered with status \(code).", comment: "HTTP status code")
             }
         }
     }
@@ -75,13 +75,13 @@ enum UpdateChecker {
                     showAvailable(release)
                 } else {
                     let alert = NSAlert()
-                    alert.messageText = "You’re up to date."
-                    alert.informativeText = "Folio \(currentVersion) is the latest version."
+                    alert.messageText = String(localized: "You’re up to date.")
+                    alert.informativeText = String(localized: "Folio \(currentVersion) is the latest version.")
                     present(alert) { _ in }
                 }
             } catch {
                 let alert = NSAlert()
-                alert.messageText = "Couldn’t check for updates."
+                alert.messageText = String(localized: "Couldn’t check for updates.")
                 alert.informativeText = error.localizedDescription
                 present(alert) { _ in }
             }
@@ -122,10 +122,10 @@ enum UpdateChecker {
 
     private static func showAvailable(_ release: Release) {
         let alert = NSAlert()
-        alert.messageText = "Folio \(release.version) is available."
+        alert.messageText = String(localized: "Folio \(release.version) is available.")
         alert.informativeText = notes(release.body)
-        alert.addButton(withTitle: "Download")
-        alert.addButton(withTitle: "Not Now")
+        alert.addButton(withTitle: String(localized: "Download"))
+        alert.addButton(withTitle: String(localized: "Not Now"))
         present(alert) { response in
             if response == .alertFirstButtonReturn { NSWorkspace.shared.open(release.htmlURL) }
         }

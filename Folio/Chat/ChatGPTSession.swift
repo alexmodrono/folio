@@ -144,6 +144,28 @@ final class ChatGPTSession: NSObject {
         let json = (try? JSONSerialization.data(withJSONObject: urls)).flatMap { String(data: $0, encoding: .utf8) } ?? "{}"
         return "if (/(^|\\.)chatgpt\\.com$/.test(location.hostname)) window.__folioIcons = \(json);"
     }()
+    /// The labels the bridge shows on chatgpt.com, in the app's language. The bridge fills in `{n}` (a number),
+    /// `{doc}` (a document name) and `{title}` (a chat title), and falls back to English for missing keys.
+    private static let stringsScript: String = {
+        let strings: [String: String] = [
+            "page": String(localized: "Page {n}", comment: "Chip label for one whole page; {n} is the page number"),
+            "onePage": String(localized: "1 page", comment: "Chip label for one whole page without a number"),
+            "pages": String(localized: "{n} pages", comment: "Chip label; {n} is 2 or more"),
+            "oneSelection": String(localized: "1 selection", comment: "Chip label"),
+            "selections": String(localized: "{n} selections", comment: "Chip label; {n} is 2 or more"),
+            "references": String(localized: "{n} references", comment: "Chip label for selections and pages together; {n} is 2 or more"),
+            "removeSelection": String(localized: "Remove selection"),
+            "removeSelections": String(localized: "Remove selections"),
+            "fromPage": String(localized: "From {doc}, page {n}", comment: "Quote source; {doc} is a document name"),
+            "fromPages": String(localized: "From {doc}, pages {n}", comment: "Quote source; {n} is a page range like 4–5"),
+            "fromWholePage": String(localized: "From {doc}, page {n} (whole page)", comment: "Quote source for a whole page"),
+            "fromChat": String(localized: "From the chat “{title}”", comment: "Quote source; {title} is a chat title"),
+            "fromAnotherChat": String(localized: "From another chat", comment: "Quote source"),
+        ]
+        let json = (try? JSONSerialization.data(withJSONObject: strings)).flatMap { String(data: $0, encoding: .utf8) } ?? "{}"
+        return "if (/(^|\\.)chatgpt\\.com$/.test(location.hostname)) window.__folioStrings = \(json);"
+    }()
+
     /// Larger files skip the JavaScript bridge and go through a native paste.
     private static let maxBridgeBytes = 30_000_000
 
@@ -166,10 +188,13 @@ final class ChatGPTSession: NSObject {
         configuration.websiteDataStore = .default()
         configuration.applicationNameForUserAgent = "Version/26.0 Safari/605.1.15"
         configuration.preferences.isElementFullscreenEnabled = true
-        // Runs before the bridge (scripts run in the order they're added), so its chips can use SF Symbols.
-        configuration.userContentController.addUserScript(
-            WKUserScript(source: Self.iconScript, injectionTime: .atDocumentEnd, forMainFrameOnly: true, in: Self.world)
-        )
+        // Run before the bridge (scripts run in the order they're added), so its chips can use SF Symbols
+        // and the app's language.
+        for source in [Self.iconScript, Self.stringsScript] {
+            configuration.userContentController.addUserScript(
+                WKUserScript(source: source, injectionTime: .atDocumentEnd, forMainFrameOnly: true, in: Self.world)
+            )
+        }
         if let script = Bundle.main.url(forResource: "chatgpt-bridge", withExtension: "js"),
            let source = try? String(contentsOf: script, encoding: .utf8) {
             configuration.userContentController.addUserScript(
@@ -677,8 +702,8 @@ extension ChatGPTSession: WKUIDelegate {
     func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo) async -> Bool {
         let alert = NSAlert()
         alert.messageText = message
-        alert.addButton(withTitle: "OK")
-        alert.addButton(withTitle: "Cancel")
+        alert.addButton(withTitle: String(localized: "OK"))
+        alert.addButton(withTitle: String(localized: "Cancel"))
         return alert.runModal() == .alertFirstButtonReturn
     }
 
@@ -693,7 +718,7 @@ extension ChatGPTSession: WKUIDelegate {
         )
         window.isReleasedWhenClosed = false
         window.contentView = popup
-        window.title = "Sign In"
+        window.title = String(localized: "Sign In")
         window.center()
         window.makeKeyAndOrderFront(nil)
         popups.append(window)
@@ -735,13 +760,13 @@ final class ChatWebView: WKWebView {
         guard let session, !session.selectedText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return [] }
         var items: [NSMenuItem] = []
         for other in ChatGPTSession.all where other !== session {
-            let item = NSMenuItem(title: "Ask in “\(other.title ?? "New Chat")”", action: #selector(askInCard(_:)), keyEquivalent: "")
+            let item = NSMenuItem(title: String(localized: "Ask in “\(other.title ?? String(localized: "New Chat"))”", comment: "Chat card title"), action: #selector(askInCard(_:)), keyEquivalent: "")
             item.target = self
             item.representedObject = other
             items.append(item)
         }
         if ChatGPTSession.all.count < ChatGPTSession.maxCards {
-            let item = NSMenuItem(title: "Ask in New Chat Card", action: #selector(askInCard(_:)), keyEquivalent: "")
+            let item = NSMenuItem(title: String(localized: "Ask in New Chat Card"), action: #selector(askInCard(_:)), keyEquivalent: "")
             item.target = self
             items.append(item)
         }

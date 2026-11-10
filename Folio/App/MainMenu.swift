@@ -6,22 +6,22 @@ enum MainMenu {
         let main = NSMenu()
         let name = ProcessInfo.processInfo.processName
 
-        let services = NSMenu(title: "Services")
+        let services = NSMenu(title: String(localized: "Services"))
         NSApp.servicesMenu = services
-        main.addItem(submenu(name, [
+        main.addItem(submenuItem(name, NSMenu.with(name, [
             item("About \(name)", #selector(NSApplication.orderFrontStandardAboutPanel(_:))),
             item("Check for Updates…", #selector(AppDelegate.checkForUpdates(_:))),
             .separator(),
             item("Settings…", #selector(AppDelegate.showSettings(_:)), ","),
             .separator(),
-            submenuItem("Services", services),
+            submenuItem(String(localized: "Services"), services),
             .separator(),
             item("Hide \(name)", #selector(NSApplication.hide(_:)), "h"),
             item("Hide Others", #selector(NSApplication.hideOtherApplications(_:)), "h", [.command, .option]),
             item("Show All", #selector(NSApplication.unhideAllApplications(_:))),
             .separator(),
             item("Quit \(name)", #selector(NSApplication.terminate(_:)), "q"),
-        ]))
+        ])))
 
         main.addItem(submenu("File", [
             item("Open…", #selector(AppDelegate.openDocument(_:)), "o"),
@@ -45,7 +45,7 @@ enum MainMenu {
             item("Paste", #selector(NSText.paste(_:)), "v"),
             item("Select All", #selector(NSText.selectAll(_:)), "a"),
             .separator(),
-            submenuItem("Find", NSMenu.with("Find", [
+            submenuItem(String(localized: "Find", comment: "Edit menu submenu"), NSMenu.with(String(localized: "Find", comment: "Edit menu submenu"), [
                 item("Find…", #selector(MainWindowController.focusSearch(_:)), "f"),
                 item("Find Next", #selector(MainWindowController.findNextMatch(_:)), "g"),
                 item("Find Previous", #selector(MainWindowController.findPreviousMatch(_:)), "g", [.command, .shift]),
@@ -78,7 +78,7 @@ enum MainMenu {
             item("Go to Page…", #selector(MainWindowController.readerGoToPage(_:)), "g", [.command, .option]),
         ]))
 
-        let chat = NSMenu.with("Chat", [
+        let chat = NSMenu.with(String(localized: "Chat"), [
             item("Ask About Selection", #selector(MainWindowController.askAboutSelection(_:)), "l"),
             item("Ask About Page", #selector(MainWindowController.askAboutPage(_:)), "l", [.command, .option]),
             item("Attach PDF", #selector(MainWindowController.attachDocument(_:)), "a", [.command, .shift]),
@@ -87,9 +87,9 @@ enum MainMenu {
             QuestionsMenu.shared.item,
         ])
         chat.delegate = QuestionsMenu.shared
-        main.addItem(submenuItem("Chat", chat))
+        main.addItem(submenuItem(String(localized: "Chat"), chat))
 
-        let window = NSMenu.with("Window", [
+        let window = NSMenu.with(String(localized: "Window"), [
             item("Minimize", #selector(NSWindow.performMiniaturize(_:)), "m"),
             item("Zoom", #selector(NSWindow.performZoom(_:))),
             .separator(),
@@ -98,31 +98,32 @@ enum MainMenu {
             item("Bring All to Front", #selector(NSApplication.arrangeInFront(_:))),
         ])
         NSApp.windowsMenu = window
-        main.addItem(submenuItem("Window", window))
+        main.addItem(submenuItem(String(localized: "Window"), window))
 
-        let help = NSMenu.with("Help", [
+        let help = NSMenu.with(String(localized: "Help"), [
             item("Report a Problem…", #selector(AppDelegate.reportProblem(_:))),
         ])
         NSApp.helpMenu = help
-        main.addItem(submenuItem("Help", help))
+        main.addItem(submenuItem(String(localized: "Help"), help))
         return main
     }
 
     private static func item(
-        _ title: String,
+        _ title: String.LocalizationValue,
         _ action: Selector?,
         _ key: String = "",
         _ modifiers: NSEvent.ModifierFlags = .command,
         tag: Int = 0
     ) -> NSMenuItem {
-        let item = NSMenuItem(title: title, action: action, keyEquivalent: key)
+        let item = NSMenuItem(title: String(localized: title), action: action, keyEquivalent: key)
         item.keyEquivalentModifierMask = key.isEmpty ? [] : modifiers
         item.tag = tag
         return item
     }
 
-    private static func submenu(_ title: String, _ items: [NSMenuItem]) -> NSMenuItem {
-        submenuItem(title, NSMenu.with(title, items))
+    private static func submenu(_ title: String.LocalizationValue, _ items: [NSMenuItem]) -> NSMenuItem {
+        let title = String(localized: title)
+        return submenuItem(title, NSMenu.with(title, items))
     }
 
     private static func submenuItem(_ title: String, _ menu: NSMenu) -> NSMenuItem {

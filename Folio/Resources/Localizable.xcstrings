@@ -1,0 +1,2051 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "%@’s ChatGPT sign-in has expired. Open chatgpt.com in %@, then try again." : {
+      "comment" : "Browser name, twice",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@’s ChatGPT sign-in has expired. Open chatgpt.com in %2$@, then try again."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La sesión de ChatGPT en %1$@ ha caducado. Abre chatgpt.com en %2$@ y vuelve a intentarlo."
+          }
+        }
+      }
+    },
+    "%lld items" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld item"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld items"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld elemento"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld elementos"
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld elementos"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld of %lld matches" : {
+      "comment" : "Find status: current match of total",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld of %#@matches@"
+          },
+          "substitutions" : {
+            "matches" : {
+              "argNum" : 2,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "one" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg match"
+                    }
+                  },
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg matches"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld de %#@matches@"
+          },
+          "substitutions" : {
+            "matches" : {
+              "argNum" : 2,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "one" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg coincidencia"
+                    }
+                  },
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg coincidencias"
+                    }
+                  },
+                  "many" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg coincidencias"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld pages" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld page"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld pages"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld página"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld páginas"
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld páginas"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "1 page" : {
+      "comment" : "Chip label for one whole page without a number",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 página"
+          }
+        }
+      }
+    },
+    "1 selection" : {
+      "comment" : "Chip label",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 selección"
+          }
+        }
+      }
+    },
+    "About %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acerca de %@"
+          }
+        }
+      }
+    },
+    "Actual Size" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tamaño real"
+          }
+        }
+      }
+    },
+    "Add Chat" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añadir chat"
+          }
+        }
+      }
+    },
+    "Add to Favorites" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añadir a favoritos"
+          }
+        }
+      }
+    },
+    "Already signed in to ChatGPT?" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Ya has iniciado sesión en ChatGPT?"
+          }
+        }
+      }
+    },
+    "Ask About Page" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preguntar sobre la página"
+          }
+        }
+      }
+    },
+    "Ask About Selection" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preguntar sobre la selección"
+          }
+        }
+      }
+    },
+    "Ask ChatGPT" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preguntar a ChatGPT"
+          }
+        }
+      }
+    },
+    "Ask ChatGPT About Page %lld" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preguntar a ChatGPT sobre la página %lld"
+          }
+        }
+      }
+    },
+    "Ask in New Chat Card" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preguntar en una tarjeta nueva"
+          }
+        }
+      }
+    },
+    "Ask in “%@”" : {
+      "comment" : "Chat card title",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preguntar en “%@”"
+          }
+        }
+      }
+    },
+    "Attach PDF" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adjuntar PDF"
+          }
+        }
+      }
+    },
+    "Attach the open PDF to new chats" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adjuntar el PDF abierto a los chats nuevos"
+          }
+        }
+      }
+    },
+    "Bring All to Front" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Traer todo al frente"
+          }
+        }
+      }
+    },
+    "Cancel" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancelar"
+          }
+        }
+      }
+    },
+    "Change…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cambiar…"
+          }
+        }
+      }
+    },
+    "Chat" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chat"
+          }
+        }
+      }
+    },
+    "ChatGPT" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ChatGPT"
+          }
+        }
+      }
+    },
+    "Check for Updates…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar actualizaciones…"
+          }
+        }
+      }
+    },
+    "Check for updates automatically" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar actualizaciones automáticamente"
+          }
+        }
+      }
+    },
+    "Choose your courses in Findle" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elige tus cursos en Findle"
+          }
+        }
+      }
+    },
+    "Close" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cerrar"
+          }
+        }
+      }
+    },
+    "Close Chat" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cerrar chat"
+          }
+        }
+      }
+    },
+    "Connect Moodle" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conectar Moodle"
+          }
+        }
+      }
+    },
+    "Continue" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continuar"
+          }
+        }
+      }
+    },
+    "Continue with %@" : {
+      "comment" : "Browser name",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continuar con %@"
+          }
+        }
+      }
+    },
+    "Continuous Scroll" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desplazamiento continuo"
+          }
+        }
+      }
+    },
+    "Copy" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copiar"
+          }
+        }
+      }
+    },
+    "Copy to My Documents" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copiar a Mis documentos"
+          }
+        }
+      }
+    },
+    "Couldn’t check for updates." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se han podido buscar actualizaciones."
+          }
+        }
+      }
+    },
+    "Courses" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cursos"
+          }
+        }
+      }
+    },
+    "Cut" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cortar"
+          }
+        }
+      }
+    },
+    "Date Added" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fecha de adición"
+          }
+        }
+      }
+    },
+    "Date Modified" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fecha de modificación"
+          }
+        }
+      }
+    },
+    "Delete" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminar"
+          }
+        }
+      }
+    },
+    "Delete All" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminar todas"
+          }
+        }
+      }
+    },
+    "Delete All Questions…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminar todas las preguntas…"
+          }
+        }
+      }
+    },
+    "Delete all questions?" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Eliminar todas las preguntas?"
+          }
+        }
+      }
+    },
+    "Download" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Descargar"
+          }
+        }
+      }
+    },
+    "Drop PDFs here, or import them." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suelta aquí los PDF o impórtalos."
+          }
+        }
+      }
+    },
+    "Edit" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edición"
+          }
+        }
+      }
+    },
+    "Enter Full Screen" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usar pantalla completa"
+          }
+        }
+      }
+    },
+    "Enter the password to open it." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Introduce la contraseña para abrirlo."
+          }
+        }
+      }
+    },
+    "Favorites" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favoritos"
+          }
+        }
+      }
+    },
+    "File" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archivo"
+          }
+        }
+      }
+    },
+    "Find" : {
+      "comment" : "Edit menu submenu",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar"
+          }
+        }
+      }
+    },
+    "Find Next" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar siguiente"
+          }
+        }
+      }
+    },
+    "Find Previous" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar anterior"
+          }
+        }
+      }
+    },
+    "Find in document" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar en el documento"
+          }
+        }
+      }
+    },
+    "Findle syncs your Moodle courses to your Mac. Once it’s set up, they appear in the sidebar, ready to read and ask about." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Findle sincroniza tus cursos de Moodle con tu Mac. Cuando lo configures, aparecerán en la barra lateral, listos para leer y preguntar."
+          }
+        }
+      }
+    },
+    "Find…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar…"
+          }
+        }
+      }
+    },
+    "Folder" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carpeta"
+          }
+        }
+      }
+    },
+    "Folio %@ is available." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Folio %@ ya está disponible."
+          }
+        }
+      }
+    },
+    "Folio %@ is the latest version." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Folio %@ es la versión más reciente."
+          }
+        }
+      }
+    },
+    "Folio can copy your ChatGPT sign-in from a browser. Nothing else is copied." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Folio puede copiar tu sesión de ChatGPT de un navegador. No se copia nada más."
+          }
+        }
+      }
+    },
+    "Folio can’t find ChatGPT’s message box, so it can’t add your PDF or selections." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Folio no encuentra el cuadro de mensaje de ChatGPT, así que no puede añadir tu PDF ni tus selecciones."
+          }
+        }
+      }
+    },
+    "Folio can’t fully work with this version of ChatGPT. Selections are pasted as text." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Folio no funciona del todo con esta versión de ChatGPT. Las selecciones se pegan como texto."
+          }
+        }
+      }
+    },
+    "Folio needs Full Disk Access to read Safari’s sign-in." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Folio necesita acceso total al disco para leer la sesión de Safari."
+          }
+        }
+      }
+    },
+    "Folio wasn’t allowed to use “%@”." : {
+      "comment" : "Keychain item name",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Folio no tiene permiso para usar “%@”."
+          }
+        }
+      }
+    },
+    "Free and open source" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gratis y de código abierto"
+          }
+        }
+      }
+    },
+    "From another chat" : {
+      "comment" : "Quote source",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De otro chat"
+          }
+        }
+      }
+    },
+    "From the chat “{title}”" : {
+      "comment" : "Quote source; {title} is a chat title",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Del chat “{title}”"
+          }
+        }
+      }
+    },
+    "From {doc}, page {n}" : {
+      "comment" : "Quote source; {doc} is a document name",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De {doc}, página {n}"
+          }
+        }
+      }
+    },
+    "From {doc}, page {n} (whole page)" : {
+      "comment" : "Quote source for a whole page",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De {doc}, página {n} (completa)"
+          }
+        }
+      }
+    },
+    "From {doc}, pages {n}" : {
+      "comment" : "Quote source; {n} is a page range like 4–5",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De {doc}, páginas {n}"
+          }
+        }
+      }
+    },
+    "Get Findle" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obtener Findle"
+          }
+        }
+      }
+    },
+    "Go" : {
+      "comment" : "Go to Page button",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ir"
+          }
+        }
+      }
+    },
+    "Go to Page" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ir a la página"
+          }
+        }
+      }
+    },
+    "Go to Page…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ir a la página…"
+          }
+        }
+      }
+    },
+    "Grid" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuadrícula"
+          }
+        }
+      }
+    },
+    "Help" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ayuda"
+          }
+        }
+      }
+    },
+    "Hide %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ocultar %@"
+          }
+        }
+      }
+    },
+    "Hide Chat" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ocultar chat"
+          }
+        }
+      }
+    },
+    "Hide Others" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ocultar otros"
+          }
+        }
+      }
+    },
+    "Hide Sidebar" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ocultar barra lateral"
+          }
+        }
+      }
+    },
+    "Hide from Sidebar" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ocultar de la barra lateral"
+          }
+        }
+      }
+    },
+    "Home" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inicio"
+          }
+        }
+      }
+    },
+    "Import" : {
+      "comment" : "Import panel button",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importar"
+          }
+        }
+      }
+    },
+    "Import PDFs" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importar PDF"
+          }
+        }
+      }
+    },
+    "Import PDFs…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importar PDF…"
+          }
+        }
+      }
+    },
+    "Import Sign-In from a Browser…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importar sesión de un navegador…"
+          }
+        }
+      }
+    },
+    "Layout" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disposición"
+          }
+        }
+      }
+    },
+    "Library" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Biblioteca"
+          }
+        }
+      }
+    },
+    "List" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lista"
+          }
+        }
+      }
+    },
+    "Minimize" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minimizar"
+          }
+        }
+      }
+    },
+    "Moodle" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moodle"
+          }
+        }
+      }
+    },
+    "More" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Más"
+          }
+        }
+      }
+    },
+    "Move to Trash" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trasladar a la Papelera"
+          }
+        }
+      }
+    },
+    "My documents" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mis documentos"
+          }
+        }
+      }
+    },
+    "Name" : {
+      "comment" : "Sort order",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nombre"
+          }
+        }
+      }
+    },
+    "Needs Findle" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Requiere Findle"
+          }
+        }
+      }
+    },
+    "Needs Full Disk Access" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Requiere acceso total al disco"
+          }
+        }
+      }
+    },
+    "New Chat" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nuevo chat"
+          }
+        }
+      }
+    },
+    "New Folder" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nueva carpeta"
+          }
+        }
+      }
+    },
+    "Next Page" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Página siguiente"
+          }
+        }
+      }
+    },
+    "No PDFs yet" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aún no hay PDF"
+          }
+        }
+      }
+    },
+    "No browser is signed in to ChatGPT." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ningún navegador tiene una sesión de ChatGPT."
+          }
+        }
+      }
+    },
+    "No favorites" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay favoritos"
+          }
+        }
+      }
+    },
+    "No matches" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin coincidencias"
+          }
+        }
+      }
+    },
+    "No release was found." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha encontrado ninguna versión."
+          }
+        }
+      }
+    },
+    "No update source is set." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay ninguna fuente de actualizaciones."
+          }
+        }
+      }
+    },
+    "Not Now" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ahora no"
+          }
+        }
+      }
+    },
+    "Not downloaded" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No descargado"
+          }
+        }
+      }
+    },
+    "Not set up" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin configurar"
+          }
+        }
+      }
+    },
+    "OK" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aceptar"
+          }
+        }
+      }
+    },
+    "Open" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir"
+          }
+        }
+      }
+    },
+    "Open Findle" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir Findle"
+          }
+        }
+      }
+    },
+    "Open Privacy Settings" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir ajustes de privacidad"
+          }
+        }
+      }
+    },
+    "Open…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir…"
+          }
+        }
+      }
+    },
+    "Page %lld" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Página %lld"
+          }
+        }
+      }
+    },
+    "Page %lld of %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Page %1$lld of %2$lld"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Página %1$lld de %2$lld"
+          }
+        }
+      }
+    },
+    "Page {n}" : {
+      "comment" : "Chip label for one whole page; {n} is the page number",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Página {n}"
+          }
+        }
+      }
+    },
+    "Paste" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pegar"
+          }
+        }
+      }
+    },
+    "Previous Page" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Página anterior"
+          }
+        }
+      }
+    },
+    "Print…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imprimir…"
+          }
+        }
+      }
+    },
+    "Question Bubbles" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Burbujas de preguntas"
+          }
+        }
+      }
+    },
+    "Questions" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preguntas"
+          }
+        }
+      }
+    },
+    "Questions on This Page" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preguntas en esta página"
+          }
+        }
+      }
+    },
+    "Quit %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salir de %@"
+          }
+        }
+      }
+    },
+    "Read your Moodle courses here" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lee aquí tus cursos de Moodle"
+          }
+        }
+      }
+    },
+    "Redo" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rehacer"
+          }
+        }
+      }
+    },
+    "Reload" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Volver a cargar"
+          }
+        }
+      }
+    },
+    "Remove from Favorites" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminar de favoritos"
+          }
+        }
+      }
+    },
+    "Remove selection" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitar selección"
+          }
+        }
+      }
+    },
+    "Remove selections" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitar selecciones"
+          }
+        }
+      }
+    },
+    "Rename" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Renombrar"
+          }
+        }
+      }
+    },
+    "Rename…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Renombrar…"
+          }
+        }
+      }
+    },
+    "Report a Problem" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informar de un problema"
+          }
+        }
+      }
+    },
+    "Report a Problem…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informar de un problema…"
+          }
+        }
+      }
+    },
+    "Right-click a document and choose Add to Favorites." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haz clic derecho en un documento y elige Añadir a favoritos."
+          }
+        }
+      }
+    },
+    "Search documents" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar documentos"
+          }
+        }
+      }
+    },
+    "Select All" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seleccionar todo"
+          }
+        }
+      }
+    },
+    "Services" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Servicios"
+          }
+        }
+      }
+    },
+    "Settings" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajustes"
+          }
+        }
+      }
+    },
+    "Settings…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajustes…"
+          }
+        }
+      }
+    },
+    "Show All" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar todo"
+          }
+        }
+      }
+    },
+    "Show Chat" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar chat"
+          }
+        }
+      }
+    },
+    "Show Chats Side by Side" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar chats en columnas"
+          }
+        }
+      }
+    },
+    "Show Sidebar" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar barra lateral"
+          }
+        }
+      }
+    },
+    "Show in Chat" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar en el chat"
+          }
+        }
+      }
+    },
+    "Show in Finder" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar en el Finder"
+          }
+        }
+      }
+    },
+    "Show in sidebar" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar en la barra lateral"
+          }
+        }
+      }
+    },
+    "Show question bubbles" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar burbujas de preguntas"
+          }
+        }
+      }
+    },
+    "Sidebar" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Barra lateral"
+          }
+        }
+      }
+    },
+    "Sign In" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar sesión"
+          }
+        }
+      }
+    },
+    "Sign In Manually" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar sesión manualmente"
+          }
+        }
+      }
+    },
+    "Sign Out" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cerrar sesión"
+          }
+        }
+      }
+    },
+    "Sign Out of ChatGPT…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cerrar sesión en ChatGPT…"
+          }
+        }
+      }
+    },
+    "Sign in to Moodle in Findle and pick your courses. They’ll appear in the sidebar." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inicia sesión en Moodle desde Findle y elige tus cursos. Aparecerán en la barra lateral."
+          }
+        }
+      }
+    },
+    "Sign out of ChatGPT?" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Cerrar sesión en ChatGPT?"
+          }
+        }
+      }
+    },
+    "Single Page" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una página"
+          }
+        }
+      }
+    },
+    "Sort By" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ordenar por"
+          }
+        }
+      }
+    },
+    "Sync with Moodle" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sincronizar con Moodle"
+          }
+        }
+      }
+    },
+    "That browser isn’t signed in to ChatGPT anymore." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ese navegador ya no tiene una sesión de ChatGPT."
+          }
+        }
+      }
+    },
+    "That password didn’t work. Try again." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La contraseña no es correcta. Inténtalo de nuevo."
+          }
+        }
+      }
+    },
+    "The browser’s cookies couldn’t be read." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se han podido leer las cookies del navegador."
+          }
+        }
+      }
+    },
+    "The browser’s keychain item couldn’t be read (%d)." : {
+      "comment" : "Error code",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha podido leer el ítem del llavero del navegador (%d)."
+          }
+        }
+      }
+    },
+    "The server answered with status %lld." : {
+      "comment" : "HTTP status code",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El servidor respondió con el estado %lld."
+          }
+        }
+      }
+    },
+    "This PDF is locked." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este PDF está bloqueado."
+          }
+        }
+      }
+    },
+    "This file can’t be opened." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este archivo no se puede abrir."
+          }
+        }
+      }
+    },
+    "This file couldn’t be downloaded." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha podido descargar este archivo."
+          }
+        }
+      }
+    },
+    "This folder is empty" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta carpeta está vacía"
+          }
+        }
+      }
+    },
+    "This removes the ChatGPT session saved in Folio." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se eliminará la sesión de ChatGPT guardada en Folio."
+          }
+        }
+      }
+    },
+    "This removes the bubbles from every PDF. Your chats on chatgpt.com stay." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se eliminarán las burbujas de todos los PDF. Tus chats en chatgpt.com se conservan."
+          }
+        }
+      }
+    },
+    "Thumbnails" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miniaturas"
+          }
+        }
+      }
+    },
+    "Two Pages" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dos páginas"
+          }
+        }
+      }
+    },
+    "Undo" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deshacer"
+          }
+        }
+      }
+    },
+    "Updates" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualizaciones"
+          }
+        }
+      }
+    },
+    "Use Folder" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usar carpeta"
+          }
+        }
+      }
+    },
+    "Used %@" : {
+      "comment" : "When a browser last used ChatGPT, e.g. “Used 2 days ago”",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usado %@"
+          }
+        }
+      }
+    },
+    "View" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visualización"
+          }
+        }
+      }
+    },
+    "Window" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ventana"
+          }
+        }
+      }
+    },
+    "Your Mac will ask for your password to let Folio use “%@”." : {
+      "comment" : "Keychain item name",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu Mac te pedirá la contraseña para que Folio pueda usar “%@”."
+          }
+        }
+      }
+    },
+    "You’re up to date." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Folio está actualizado."
+          }
+        }
+      }
+    },
+    "Zoom" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zoom"
+          }
+        }
+      }
+    },
+    "Zoom In" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ampliar"
+          }
+        }
+      }
+    },
+    "Zoom Out" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reducir"
+          }
+        }
+      }
+    },
+    "Zoom to Fit" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajustar a la ventana"
+          }
+        }
+      }
+    },
+    "{n} pages" : {
+      "comment" : "Chip label; {n} is 2 or more",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "{n} páginas"
+          }
+        }
+      }
+    },
+    "{n} references" : {
+      "comment" : "Chip label for selections and pages together; {n} is 2 or more",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "{n} referencias"
+          }
+        }
+      }
+    },
+    "{n} selections" : {
+      "comment" : "Chip label; {n} is 2 or more",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "{n} selecciones"
+          }
+        }
+      }
+    },
+    "“%@” is locked" : {
+      "comment" : "File name",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@” está bloqueado"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

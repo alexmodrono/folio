@@ -55,11 +55,11 @@ struct FindleView: View {
         .background(Theme.canvas)
     }
 
-    private var title: String {
+    private var title: LocalizedStringKey {
         findle.status == .notSetUp ? "Choose your courses in Findle" : "Read your Moodle courses here"
     }
 
-    private var message: String {
+    private var message: LocalizedStringKey {
         if findle.status == .notSetUp {
             return "Sign in to Moodle in Findle and pick your courses. They’ll appear in the sidebar."
         }

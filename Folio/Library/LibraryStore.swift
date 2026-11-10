@@ -8,9 +8,9 @@ enum LibrarySort: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .name: "Name"
-        case .modified: "Date Modified"
-        case .added: "Date Added"
+        case .name: String(localized: "Name", comment: "Sort order")
+        case .modified: String(localized: "Date Modified")
+        case .added: String(localized: "Date Added")
         }
     }
 }
@@ -284,7 +284,7 @@ final class LibraryStore {
 
     func createFolder(in folder: URL?) -> URL? {
         if let folder, isReadOnly(folder) { return nil }
-        let url = uniqueURL(for: "New Folder", in: folder ?? rootURL)
+        let url = uniqueURL(for: String(localized: "New Folder"), in: folder ?? rootURL)
         do {
             try files.createDirectory(at: url, withIntermediateDirectories: false)
         } catch {

@@ -366,12 +366,42 @@
   const WHOLE_PAGE = /\(whole page\)$/;
   const pageNumber = (item) => (item.source.match(/pages? ([\d–-]+)/) || [])[1];
 
+  // Visible labels in the app's language (`window.__folioStrings`, set by a script that runs just before this
+  // one), with English fallbacks. Only what's shown is translated; sources in the markup stay English.
+  function t(key, fallback, values = {}) {
+    let text = (window.__folioStrings || {})[key] || fallback;
+    for (const [name, value] of Object.entries(values)) text = text.split(`{${name}}`).join(String(value));
+    return text;
+  }
+
   function chipLabel(items) {
     const pages = items.filter((item) => WHOLE_PAGE.test(item.source));
-    if (items.length === 1 && pages.length === 1) return pageNumber(pages[0]) ? `Page ${pageNumber(pages[0])}` : '1 page';
-    if (pages.length === items.length) return `${items.length} pages`;
-    if (pages.length === 0) return items.length === 1 ? '1 selection' : `${items.length} selections`;
-    return `${items.length} references`;
+    if (items.length === 1 && pages.length === 1) {
+      const n = pageNumber(pages[0]);
+      return n ? t('page', 'Page {n}', { n }) : t('onePage', '1 page');
+    }
+    if (pages.length === items.length) return t('pages', '{n} pages', { n: items.length });
+    if (pages.length === 0) {
+      return items.length === 1 ? t('oneSelection', '1 selection') : t('selections', '{n} selections', { n: items.length });
+    }
+    return t('references', '{n} references', { n: items.length });
+  }
+
+  // A quote's source as shown under it. The English source itself is what goes into the message.
+  const SOURCE_FORMS = [
+    [/^From (.+), page (\S+) \(whole page\)$/, 'fromWholePage', (m) => ({ doc: m[1], n: m[2] })],
+    [/^From (.+), pages (\S+)$/, 'fromPages', (m) => ({ doc: m[1], n: m[2] })],
+    [/^From (.+), page (\S+)$/, 'fromPage', (m) => ({ doc: m[1], n: m[2] })],
+    [/^From the chat “(.*)”$/, 'fromChat', (m) => ({ title: m[1] })],
+    [/^From another chat$/, 'fromAnotherChat', () => ({})],
+  ];
+
+  function sourceLabel(source) {
+    for (const [pattern, key, values] of SOURCE_FORMS) {
+      const match = source.match(pattern);
+      if (match) return t(key, source, values(match));
+    }
+    return source;
   }
 
   // The chip with its expandable list of quotes. `onRemove` adds a remove button (composer only).
@@ -398,7 +428,7 @@
       remove.type = 'button';
       remove.className = 'folio-remove';
       remove.textContent = '×';
-      remove.title = items.length === 1 ? 'Remove selection' : 'Remove selections';
+      remove.title = items.length === 1 ? t('removeSelection', 'Remove selection') : t('removeSelections', 'Remove selections');
       remove.setAttribute('aria-label', remove.title);
       remove.addEventListener('click', (event) => {
         event.preventDefault();
@@ -419,7 +449,7 @@
       if (item.source) {
         const source = document.createElement('span');
         source.className = 'folio-source';
-        source.textContent = item.source;
+        source.textContent = sourceLabel(item.source);
         quote.append(source);
       }
       quotes.append(quote);

@@ -48,6 +48,8 @@ targets:
       properties:
         CFBundleName: Folio
         CFBundleDisplayName: Folio
+        CFBundleDevelopmentRegion: en
+        CFBundleLocalizations: [en, es]
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         LSMinimumSystemVersion: $(MACOSX_DEPLOYMENT_TARGET)

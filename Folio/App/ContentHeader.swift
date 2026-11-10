@@ -6,9 +6,9 @@ final class ContentHeader: NSView {
     let titleLabel = NSTextField(labelWithString: "")
     let subtitleLabel = NSTextField(labelWithString: "")
     let searchField = NSSearchField()
-    let zoomOut = CardHeaderButton(symbol: "minus.magnifyingglass", label: "Zoom Out")
-    let zoomIn = CardHeaderButton(symbol: "plus.magnifyingglass", label: "Zoom In")
-    let chat = CardHeaderButton(symbol: "text.bubble", label: "Chat")
+    let zoomOut = CardHeaderButton(symbol: "minus.magnifyingglass", label: String(localized: "Zoom Out"))
+    let zoomIn = CardHeaderButton(symbol: "plus.magnifyingglass", label: String(localized: "Zoom In"))
+    let chat = CardHeaderButton(symbol: "text.bubble", label: String(localized: "Chat"))
 
     override init(frame: NSRect) {
         super.init(frame: frame)
@@ -74,7 +74,7 @@ final class ContentHeader: NSView {
         zoomOut.isHidden = !reading
         zoomIn.isHidden = !reading
         chat.isHidden = !reading
-        searchField.placeholderString = reading ? "Find in document" : "Search documents"
+        searchField.placeholderString = reading ? String(localized: "Find in document") : String(localized: "Search documents")
     }
 }
 
