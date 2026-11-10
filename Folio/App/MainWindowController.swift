@@ -213,6 +213,9 @@ final class MainWindowController: NSWindowController {
     private func updateHeader() {
         header.setReading(isReading)
         header.setChatVisible(split.isChatVisible)
+        if let reader, isReading {
+            header.setZoom(percent: reader.zoomPercent, displaySymbol: reader.displaySymbol)
+        }
         header.searchField.isHidden = route == .findle
     }
 
@@ -328,7 +331,50 @@ final class MainWindowController: NSWindowController {
 
     @objc func toggleSidebar(_ sender: Any?) { split.toggleSidebar(sender) }
     @objc func toggleThumbnails(_ sender: Any?) { reader?.toggleThumbnails() }
-    @objc func setDisplayMode(_ sender: NSMenuItem) { reader?.setDisplayMode(sender.tag) }
+    @objc func setDisplayMode(_ sender: NSMenuItem) {
+        reader?.setDisplayMode(sender.tag)
+        updateHeader()
+    }
+    @objc func toggleBookMode(_ sender: Any?) {
+        reader?.toggleBookMode()
+        updateHeader()
+    }
+    @objc func readerFitPage(_ sender: Any?) { reader?.fitPage() }
+    @objc func readerSetZoom(_ sender: NSMenuItem) { reader?.setZoom(percent: sender.tag) }
+    @objc func rotateLeft(_ sender: Any?) { reader?.rotate(clockwise: false) }
+    @objc func rotateRight(_ sender: Any?) { reader?.rotate(clockwise: true) }
+
+    /// The header's page display menu: layouts, thumbnails and rotation.
+    @objc func showDisplayMenu(_ sender: NSButton) {
+        let menu = NSMenu()
+        for (title, tag) in [(String(localized: "Single Page"), 0), (String(localized: "Continuous Scroll"), 1), (String(localized: "Two Pages"), 2)] {
+            menu.addItem(withTitle: title, action: #selector(setDisplayMode(_:)), keyEquivalent: "").tag = tag
+        }
+        menu.addItem(withTitle: String(localized: "Book Mode"), action: #selector(toggleBookMode(_:)), keyEquivalent: "")
+        menu.addItem(.separator())
+        menu.addItem(withTitle: String(localized: "Thumbnails"), action: #selector(toggleThumbnails(_:)), keyEquivalent: "")
+        menu.addItem(.separator())
+        menu.addItem(withTitle: String(localized: "Rotate Left"), action: #selector(rotateLeft(_:)), keyEquivalent: "")
+        menu.addItem(withTitle: String(localized: "Rotate Right"), action: #selector(rotateRight(_:)), keyEquivalent: "")
+        for item in menu.items { item.target = self }
+        menu.popUp(positioning: nil, at: NSPoint(x: 0, y: sender.bounds.maxY + Theme.Space.xs), in: sender)
+    }
+
+    /// The zoom level's menu: fit options, then preset sizes.
+    @objc func showZoomMenu(_ sender: NSButton) {
+        let menu = NSMenu()
+        menu.addItem(withTitle: String(localized: "Zoom to Fit"), action: #selector(readerZoomToFit(_:)), keyEquivalent: "")
+        menu.addItem(withTitle: String(localized: "Fit Whole Page"), action: #selector(readerFitPage(_:)), keyEquivalent: "")
+        menu.addItem(.separator())
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .percent
+        for percent in [50, 75, 100, 125, 150, 200, 300, 400] {
+            let title = formatter.string(from: NSNumber(value: Double(percent) / 100)) ?? "\(percent)%"
+            menu.addItem(withTitle: title, action: #selector(readerSetZoom(_:)), keyEquivalent: "").tag = percent
+        }
+        for item in menu.items { item.target = self }
+        menu.popUp(positioning: nil, at: NSPoint(x: 0, y: sender.bounds.maxY + Theme.Space.xs), in: sender)
+    }
     @objc func readerZoomIn(_ sender: Any?) { reader?.zoomIn() }
     @objc func readerZoomOut(_ sender: Any?) { reader?.zoomOut() }
     @objc func readerActualSize(_ sender: Any?) { reader?.actualSize() }
@@ -367,6 +413,10 @@ final class MainWindowController: NSWindowController {
         header.zoomOut.action = #selector(readerZoomOut(_:))
         header.zoomIn.target = self
         header.zoomIn.action = #selector(readerZoomIn(_:))
+        header.zoomLevel.target = self
+        header.zoomLevel.action = #selector(showZoomMenu(_:))
+        header.display.target = self
+        header.display.action = #selector(showDisplayMenu(_:))
         header.chat.target = self
         header.chat.action = #selector(toggleChat(_:))
     }
@@ -407,13 +457,24 @@ extension MainWindowController: NSMenuItemValidation {
         case #selector(setDisplayMode(_:)):
             item.state = reader?.displayModeTag == item.tag ? .on : .off
             return isReading
+        case #selector(toggleBookMode(_:)):
+            item.state = reader?.isBookMode == true ? .on : .off
+            return isReading
+        case #selector(readerZoomToFit(_:)):
+            item.state = reader?.isFittingWidth == true ? .on : .off
+            return isReading
+        case #selector(readerSetZoom(_:)):
+            item.state = reader.map { !$0.isFittingWidth && $0.zoomPercent == item.tag } == true ? .on : .off
+            return isReading
+        case #selector(readerFitPage(_:)), #selector(rotateLeft(_:)), #selector(rotateRight(_:)):
+            return isReading
         case #selector(toggleFavorite(_:)):
             guard let url = currentDocumentURL, store.node(at: url) != nil else { return false }
             item.title = store.isFavorite(url) ? String(localized: "Remove from Favorites") : String(localized: "Add to Favorites")
             return true
         case #selector(attachDocument(_:)), #selector(newChat(_:)),
              #selector(readerZoomIn(_:)), #selector(readerZoomOut(_:)), #selector(readerActualSize(_:)),
-             #selector(readerZoomToFit(_:)), #selector(readerPreviousPage(_:)), #selector(readerNextPage(_:)),
+             #selector(readerPreviousPage(_:)), #selector(readerNextPage(_:)),
              #selector(readerGoToPage(_:)), #selector(printPDF(_:)),
              #selector(findNextMatch(_:)), #selector(findPreviousMatch(_:)):
             return isReading

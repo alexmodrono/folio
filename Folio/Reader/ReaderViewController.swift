@@ -422,10 +422,67 @@ final class ReaderViewController: NSViewController {
         case 2: pdfView.displayMode = .twoUpContinuous
         default: pdfView.displayMode = .singlePageContinuous
         }
+        // Book mode (the first page on its own, like a cover) only means something with two pages.
+        pdfView.displaysAsBook = tag == 2 && Preferences.bookMode
+    }
+
+    var isBookMode: Bool { pdfView.displaysAsBook }
+
+    /// Two pages with the first one on its own, as in a printed book. Switches to two pages if needed.
+    func toggleBookMode() {
+        Preferences.bookMode = !isBookMode
+        setDisplayMode(2)
+    }
+
+    /// The SF Symbol for the current page display, shown on the header's page display button.
+    var displaySymbol: String {
+        switch displayModeTag {
+        case 0: "rectangle.portrait"
+        case 2: isBookMode ? "book.pages" : "rectangle.portrait.split.2x1"
+        default: "rectangle.portrait.on.rectangle.portrait"
+        }
     }
 
     func zoomIn() { pdfView.zoomIn(nil) }
     func zoomOut() { pdfView.zoomOut(nil) }
+
+    /// The zoom level as a percentage of actual size.
+    var zoomPercent: Int { Int((pdfView.scaleFactor * 100).rounded()) }
+
+    /// Whether the page width follows the window (Zoom to Fit).
+    var isFittingWidth: Bool { pdfView.autoScales }
+
+    func setZoom(percent: Int) {
+        pdfView.autoScales = false
+        pdfView.scaleFactor = CGFloat(percent) / 100
+    }
+
+    /// Scales so the whole current page (or spread) is visible, then shows it.
+    func fitPage() {
+        guard let page = pdfView.currentPage else { return }
+        var size = page.bounds(for: pdfView.displayBox).size
+        if page.rotation % 180 != 0 { size = CGSize(width: size.height, height: size.width) }
+        if pdfView.displayMode == .twoUp || pdfView.displayMode == .twoUpContinuous { size.width *= 2 }
+        let margin: CGFloat = 16
+        let available = pdfView.bounds.insetBy(dx: margin, dy: margin).size
+        guard size.width > 0, size.height > 0, available.width > 0, available.height > 0 else { return }
+        pdfView.autoScales = false
+        pdfView.scaleFactor = min(available.width / size.width, available.height / size.height)
+        pdfView.go(to: page)
+    }
+
+    /// Turns every page by 90° steps. Only the view changes; the file is never written.
+    func rotate(clockwise: Bool) {
+        guard let document = pdfView.document else { return }
+        let current = pdfView.currentPage
+        for index in 0..<document.pageCount {
+            guard let page = document.page(at: index) else { continue }
+            page.rotation = (page.rotation + (clockwise ? 90 : 270)) % 360
+        }
+        pdfView.layoutDocumentView()
+        refreshBubbles()
+        if let current { pdfView.go(to: current) }
+    }
 
     func actualSize() {
         pdfView.autoScales = false

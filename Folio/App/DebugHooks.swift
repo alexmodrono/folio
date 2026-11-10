@@ -14,7 +14,8 @@ import WebKit
 /// `authcheck` (lists ChatGPT cookie names and asks chatgpt.com whether the session works),
 /// `js:<function body>` (runs in the active card's bridge world and prints the return value),
 /// `cards`, `addcard`, `focus:<index>`, `menu[:<index>]` (the active card's "Ask in" items), `layout:columns|rows`,
-/// `askpage:<index>`, `bubbles`, `bubbleclick:<index>`, `pagepng:<page>:<path>`, `reveal:<quote text>`.
+/// `askpage:<index>`, `bubbles`, `bubbleclick:<index>`, `pagepng:<page>:<path>`, `reveal:<quote text>`,
+/// `view:single|continuous|two|book|fit|fitpage|rotate|<percent>`.
 enum DebugHooks {
     private nonisolated(unsafe) static var observer: NSObjectProtocol?
 
@@ -66,6 +67,22 @@ enum DebugHooks {
             pdfView.setCurrentSelection(match, animate: false)
             let handled = NSApp.sendAction(#selector(MainWindowController.askAboutSelection(_:)), to: nil, from: nil)
             print("FOLIO_DEBUG ask sent", handled ? "handled" : "no responder")
+        case "view":
+            // `view:single|continuous|two|book|fit|fitpage|rotate|<percent>`, as the View menu does it.
+            let item = NSMenuItem(title: "", action: nil, keyEquivalent: "")
+            let action: Selector
+            switch argument {
+            case "single": item.tag = 0; action = #selector(MainWindowController.setDisplayMode(_:))
+            case "continuous": item.tag = 1; action = #selector(MainWindowController.setDisplayMode(_:))
+            case "two": item.tag = 2; action = #selector(MainWindowController.setDisplayMode(_:))
+            case "book": action = #selector(MainWindowController.toggleBookMode(_:))
+            case "fit": action = #selector(MainWindowController.readerZoomToFit(_:))
+            case "fitpage": action = #selector(MainWindowController.readerFitPage(_:))
+            case "rotate": action = #selector(MainWindowController.rotateRight(_:))
+            default: item.tag = Int(argument) ?? 100; action = #selector(MainWindowController.readerSetZoom(_:))
+            }
+            let handled = NSApp.sendAction(action, to: nil, from: item)
+            print("FOLIO_DEBUG view", argument, handled ? "handled" : "no responder")
         case "askpage":
             let item = NSMenuItem(title: "", action: nil, keyEquivalent: "")
             item.representedObject = Int(argument)

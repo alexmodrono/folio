@@ -124,6 +124,12 @@ enum Preferences {
         set { defaults.set(newValue, forKey: "chatVisible") }
     }
 
+    /// With two pages, shows the first page on its own, like a book's cover.
+    static var bookMode: Bool {
+        get { defaults.bool(forKey: "bookMode") }
+        set { defaults.set(newValue, forKey: "bookMode") }
+    }
+
     /// 0 single page, 1 continuous, 2 two pages.
     static var displayMode: Int {
         get { defaults.integer(forKey: "displayMode") }

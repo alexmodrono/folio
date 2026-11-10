@@ -351,6 +351,16 @@
         }
       }
     },
+    "Book Mode": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modo libro"
+          }
+        }
+      }
+    },
     "Bring All to Front": {
       "localizations": {
         "es": {
@@ -740,6 +750,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Buscar…"
+          }
+        }
+      }
+    },
+    "Fit Whole Page": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajustar página completa"
           }
         }
       }
@@ -1359,6 +1379,16 @@
         }
       }
     },
+    "Page Display": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Visualización de página"
+          }
+        }
+      }
+    },
     "Page {n}": {
       "comment": "Chip label for one whole page; {n} is the page number",
       "localizations": {
@@ -1546,6 +1576,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Haz clic derecho en un documento y elige Añadir a favoritos."
+          }
+        }
+      }
+    },
+    "Rotate Left": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Girar a la izquierda"
+          }
+        }
+      }
+    },
+    "Rotate Right": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Girar a la derecha"
           }
         }
       }
