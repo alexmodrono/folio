@@ -8,7 +8,8 @@ final class ContentHeader: NSView {
     let searchField = NSSearchField()
     let zoomOut = CardHeaderButton(symbol: "minus.magnifyingglass", label: String(localized: "Zoom Out"))
     let zoomIn = CardHeaderButton(symbol: "plus.magnifyingglass", label: String(localized: "Zoom In"))
-    let chat = CardHeaderButton(symbol: "text.bubble", label: String(localized: "Chat"))
+    /// Mirrors the sidebar button on the window's left: a toggle for the chat column on the right.
+    let chat = CardHeaderButton(symbol: "sidebar.right", label: String(localized: "Show Chat"), isToggle: true)
 
     override init(frame: NSRect) {
         super.init(frame: frame)
@@ -40,10 +41,11 @@ final class ContentHeader: NSView {
         let stack = NSStackView(views: [titles, searchField, zoomOut, zoomIn, chat])
         stack.orientation = .horizontal
         stack.alignment = .centerY
+        // 4 pt inside a group (the zoom pair), 12 pt between groups.
         stack.spacing = Theme.Space.xs
         stack.setCustomSpacing(Theme.Space.m, after: titles)
-        stack.setCustomSpacing(Theme.Space.s, after: searchField)
-        stack.setCustomSpacing(Theme.Space.s, after: zoomIn)
+        stack.setCustomSpacing(Theme.Space.m, after: searchField)
+        stack.setCustomSpacing(Theme.Space.m, after: zoomIn)
         stack.setVisibilityPriority(.detachOnlyIfNecessary, for: titles)
         stack.edgeInsets = NSEdgeInsets(top: 0, left: Theme.Space.m, bottom: 0, right: Theme.Space.s)
         stack.translatesAutoresizingMaskIntoConstraints = false
@@ -70,6 +72,12 @@ final class ContentHeader: NSView {
     }
 
     /// Hides the reader-only controls on Home and folder pages.
+    /// Shows whether the chat column is open, like the sidebar button does for the sidebar.
+    func setChatVisible(_ visible: Bool) {
+        chat.isOn = visible
+        chat.setLabel(visible ? String(localized: "Hide Chat") : String(localized: "Show Chat"))
+    }
+
     func setReading(_ reading: Bool) {
         zoomOut.isHidden = !reading
         zoomIn.isHidden = !reading
@@ -78,16 +86,116 @@ final class ContentHeader: NSView {
     }
 }
 
-/// An icon-only button for card headers that shows its bezel on hover, like a toolbar button.
+/// An icon-only button for card headers. Flat on purpose: Liquid Glass belongs to window chrome (the sidebar
+/// button), and these sit inside opaque cards. A 28 pt target with a rounded fill on hover and press, a
+/// secondary-colored glyph that darkens on hover, and an "on" state for toggles such as the chat panel.
 final class CardHeaderButton: NSButton {
-    convenience init(symbol: String, label: String) {
+    static let size: CGFloat = 28
+
+    /// Shown as selected: a persistent fill and a full-strength glyph. Also reported to VoiceOver.
+    var isOn = false {
+        didSet {
+            guard isOn != oldValue else { return }
+            setAccessibilityValue(isOn ? 1 : 0)
+            needsDisplay = true
+        }
+    }
+
+    /// A quieter glyph for secondary actions such as closing a card.
+    var isSubtle = false {
+        didSet { needsDisplay = true }
+    }
+
+    private var isHovered = false {
+        didSet { if isHovered != oldValue { needsDisplay = true } }
+    }
+
+    convenience init(symbol: String, label: String, pointSize: CGFloat = 15, isToggle: Bool = false) {
         self.init(frame: .zero)
-        image = NSImage(systemSymbolName: symbol, accessibilityDescription: label)
+        isBordered = false
         imagePosition = .imageOnly
-        bezelStyle = .accessoryBarAction
-        showsBorderOnlyWhileMouseInside = true
+        imageScaling = .scaleNone
+        focusRingType = .default
+        wantsLayer = true
+        layer?.cornerRadius = 6
+        layer?.cornerCurve = .continuous
+        translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            widthAnchor.constraint(equalToConstant: Self.size),
+            heightAnchor.constraint(equalToConstant: Self.size),
+        ])
+        if isToggle {
+            setAccessibilityRole(.checkBox)
+            setAccessibilityValue(0)
+        }
+        setSymbol(symbol, label: label, pointSize: pointSize)
+    }
+
+    /// Changes the glyph and its name (tooltip and VoiceOver label) together.
+    func setSymbol(_ symbol: String, label: String, pointSize: CGFloat = 15) {
+        let configuration = NSImage.SymbolConfiguration(pointSize: pointSize, weight: .regular, scale: .medium)
+            .applying(.preferringHierarchical())
+        image = NSImage(systemSymbolName: symbol, accessibilityDescription: label)?.withSymbolConfiguration(configuration)
+        setLabel(label)
+    }
+
+    func setLabel(_ label: String) {
         toolTip = label
         setAccessibilityLabel(label)
+    }
+
+    override var wantsUpdateLayer: Bool { true }
+
+    override func updateLayer() {
+        // A tint of the label color: light on dark cards, dark on light ones.
+        let opacity: CGFloat = if !isEnabled {
+            0
+        } else if isHighlighted {
+            0.16
+        } else if isOn {
+            0.12
+        } else if isHovered {
+            0.08
+        } else {
+            0
+        }
+        let fill: NSColor? = opacity > 0 ? NSColor.labelColor.withAlphaComponent(opacity) : nil
+        // Resolve the dynamic color in this view's appearance; a bare `cgColor` can pick the light variant.
+        effectiveAppearance.performAsCurrentDrawingAppearance {
+            layer?.backgroundColor = fill?.cgColor
+        }
+        contentTintColor = if !isEnabled {
+            .tertiaryLabelColor
+        } else if isOn || isHovered || isHighlighted {
+            .labelColor
+        } else {
+            isSubtle ? .tertiaryLabelColor : .secondaryLabelColor
+        }
+    }
+
+    override func highlight(_ flag: Bool) {
+        super.highlight(flag)
+        needsDisplay = true
+    }
+
+    override var isEnabled: Bool {
+        didSet { needsDisplay = true }
+    }
+
+    override func updateTrackingAreas() {
+        super.updateTrackingAreas()
+        trackingAreas.forEach(removeTrackingArea)
+        addTrackingArea(NSTrackingArea(
+            rect: .zero, options: [.mouseEnteredAndExited, .activeInActiveApp, .inVisibleRect], owner: self
+        ))
+    }
+
+    override func mouseEntered(with event: NSEvent) { isHovered = true }
+    override func mouseExited(with event: NSEvent) { isHovered = false }
+
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        isHovered = false
     }
 }
 

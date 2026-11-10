@@ -212,6 +212,7 @@ final class MainWindowController: NSWindowController {
 
     private func updateHeader() {
         header.setReading(isReading)
+        header.setChatVisible(split.isChatVisible)
         header.searchField.isHidden = route == .findle
     }
 

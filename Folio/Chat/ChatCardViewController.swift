@@ -8,8 +8,8 @@ final class ChatCardViewController: NSViewController {
     private let card = CardView()
     private var body: CardBody { card.body }
     private let titleLabel = NSTextField(labelWithString: "ChatGPT")
-    private let addButton = CardHeaderButton(symbol: "plus", label: String(localized: "Add Chat"))
-    private let closeButton = CardHeaderButton(symbol: "xmark", label: String(localized: "Hide Chat"))
+    /// Closes this card. Only there when there's more than one; the reader header's toggle hides the column.
+    private let closeButton = CardHeaderButton(symbol: "xmark", label: String(localized: "Close Chat"), pointSize: 12)
     private var titleObservation: NSKeyValueObservation?
     private var importView: NSView?
     private let noticeLabel = NSTextField(wrappingLabelWithString: "")
@@ -86,10 +86,7 @@ final class ChatCardViewController: NSViewController {
         let cards = ChatGPTSession.all.count
         titleLabel.stringValue = session.title ?? "ChatGPT"
         body.isHighlighted = cards > 1 && session.isActive
-        addButton.isEnabled = cards < ChatGPTSession.maxCards
-        let closeLabel = cards > 1 ? String(localized: "Close Chat") : String(localized: "Hide Chat")
-        closeButton.toolTip = closeLabel
-        closeButton.setAccessibilityLabel(closeLabel)
+        closeButton.isHidden = cards < 2
     }
 
     // MARK: Notice
@@ -165,8 +162,6 @@ final class ChatCardViewController: NSViewController {
         titleLabel.lineBreakMode = .byTruncatingTail
         titleLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
 
-        addButton.target = self
-        addButton.action = #selector(addCard(_:))
         let newChat = CardHeaderButton(symbol: "square.and.pencil", label: String(localized: "New Chat"))
         newChat.target = self
         newChat.action = #selector(newChat(_:))
@@ -175,14 +170,17 @@ final class ChatCardViewController: NSViewController {
         more.action = #selector(showMore(_:))
         closeButton.target = self
         closeButton.action = #selector(close(_:))
+        closeButton.isSubtle = true
 
         let spacer = NSView()
         spacer.setContentHuggingPriority(.init(1), for: .horizontal)
 
-        let stack = NSStackView(views: [titleLabel, spacer, addButton, newChat, more, closeButton])
+        let stack = NSStackView(views: [titleLabel, spacer, newChat, more, closeButton])
         stack.orientation = .horizontal
         stack.alignment = .centerY
+        // 4 pt between New Chat and More, 12 pt before Close, which is set apart.
         stack.spacing = Theme.Space.xs
+        stack.setCustomSpacing(Theme.Space.m, after: more)
         stack.edgeInsets = NSEdgeInsets(top: 0, left: Theme.Space.m, bottom: 0, right: Theme.Space.s)
         stack.translatesAutoresizingMaskIntoConstraints = false
 
@@ -208,18 +206,24 @@ final class ChatCardViewController: NSViewController {
     }
 
     @objc private func close(_ sender: Any?) {
-        if ChatGPTSession.all.count > 1 {
-            ChatGPTSession.remove(session)
-        } else {
-            NSApp.sendAction(#selector(MainWindowController.toggleChat(_:)), to: nil, from: self)
-        }
+        guard ChatGPTSession.all.count > 1 else { return }
+        ChatGPTSession.remove(session)
     }
 
     @objc private func showMore(_ sender: NSButton) {
         session.focus()
         let menu = NSMenu()
+        // Items here set their own enabled state (Add Chat stops at four cards).
+        menu.autoenablesItems = false
         menu.addItem(withTitle: String(localized: "Attach PDF"), action: #selector(MainWindowController.attachDocument(_:)), keyEquivalent: "")
         menu.addItem(.separator())
+        let add = menu.addItem(withTitle: String(localized: "Add Chat"), action: #selector(addCard(_:)), keyEquivalent: "")
+        add.target = self
+        add.isEnabled = ChatGPTSession.all.count < ChatGPTSession.maxCards
+        add.image = NSImage(
+            systemSymbolName: (parent as? ChatPanelViewController)?.isSideBySide == true ? "rectangle.split.2x1" : "rectangle.split.1x2",
+            accessibilityDescription: nil
+        )
         if let panel = parent as? ChatPanelViewController {
             let layout = menu.addItem(withTitle: String(localized: "Show Chats Side by Side"), action: #selector(toggleSideBySide(_:)), keyEquivalent: "")
             layout.target = self
