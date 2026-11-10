@@ -499,7 +499,14 @@ extension SidebarViewController: NSTextFieldDelegate {
 extension SidebarViewController: NSMenuDelegate {
     func menuNeedsUpdate(_ menu: NSMenu) {
         menu.removeAllItems()
-        guard let node = clickedNode else { return }
+        guard let node = clickedNode else {
+            // Empty space or the "My documents" header: the same two commands as the header's buttons.
+            let item = outline.clickedRow >= 0 ? outline.item(atRow: outline.clickedRow) as AnyObject? : nil
+            guard item == nil || item === headerMarker else { return }
+            menu.addItem(withTitle: "Import PDFs…", action: #selector(MainWindowController.importDocuments(_:)), keyEquivalent: "")
+            menu.addItem(withTitle: "New Folder", action: #selector(MainWindowController.newFolder(_:)), keyEquivalent: "")
+            return
+        }
         menu.addItem(withTitle: "Open", action: #selector(openClicked(_:)), keyEquivalent: "").target = self
         menu.addItem(withTitle: "Show in Finder", action: #selector(showClickedInFinder(_:)), keyEquivalent: "").target = self
         if node.isReadOnly {

@@ -1,0 +1,14 @@
+<!--
+  One user turn in a chatgpt.com conversation, captured 2026-11-10 (signed in, WebKit), sanitized: all text
+  replaced by placeholders, ids, timestamps, styles, scripts and icon paths removed; the outer turn wrappers
+  and the assistant reply are trimmed. The message was sent with a PDF ("example(1).pdf") and one Folio selection,
+  so the bubble's text holds CriticMarkup the way chatgpt.com renders it before the bridge turns it into a chip.
+
+  Bridge SELECTORS this exercises (Folio/Resources/chatgpt-bridge.js):
+  - userMessage: '[data-user-message-bubble]' (data-message-author-role is gone from user turns)
+  - hasFile(name) "conversation": button[aria-label="example(1).pdf"] and span[title="example(1).pdf"] outside the composer form
+  - MARKUP / renderMessages: the {==quote==}{>>source<<} text node inside the bubble
+-->
+<div data-talvt-turn-state="complete"><div><div><h4 data-conversation-role="user"><span>Placeholder text</span><span aria-hidden="true">Placeholder text</span></h4><div><div><span><span><button aria-busy="false" aria-label="example(1).pdf" type="button"></button><span><span><svg width="20" height="20" viewBox="0 0 20 20"></svg></span><span><span title="example(1).pdf">example(1).pdf</span><span>PDF</span></span></span></span></span></div><div><div><div data-user-message-bubble="true"><div><div><div data-search-result-target=""><div><div dir="auto">{==Placeholder quote==}{&gt;&gt;From example, page 1&lt;&lt;}
+
+Placeholder question</div></div></div></div></div></div><div><div><div><button type="button" aria-label="Copy message" data-state="closed"><svg width="21" height="21" viewBox="0 0 21 21"></svg></button><button type="button" aria-label="Share prompt" data-state="closed"><svg aria-hidden="true" height="20" viewBox="0 0 20 20" width="20"></svg></button><button type="button" aria-label="Edit message" data-state="closed"><svg width="21" height="21" viewBox="0 0 21 21"></svg></button></div></div></div></div></div></div></div></div></div>

@@ -14,6 +14,10 @@ final class SettingsWindowController: NSWindowController {
 
 struct SettingsView: View {
     @AppStorage("autoAttach") private var autoAttach = true
+    @AppStorage("checkForUpdates") private var checkForUpdates = true
+    @State private var showBubbles = Preferences.showQuestionBubbles
+    @State private var questionCount = QuestionStore.shared.questions.count
+    @State private var confirmingDeleteQuestions = false
     @State private var libraryPath = LibraryStore.shared.rootURL.path
     @State private var confirmingSignOut = false
     @State private var importingSignIn = false
@@ -66,6 +70,17 @@ struct SettingsView: View {
                 Button("Import Sign-In from a Browser…") { importingSignIn = true }
                 Button("Sign Out of ChatGPT…") { confirmingSignOut = true }
             }
+            Section("Questions") {
+                Toggle("Show question bubbles", isOn: Binding(
+                    get: { showBubbles },
+                    set: { showBubbles = $0; Preferences.showQuestionBubbles = $0 }
+                ))
+                Button("Delete All Questions…") { confirmingDeleteQuestions = true }
+                    .disabled(questionCount == 0)
+            }
+            Section("Updates") {
+                Toggle("Check for updates automatically", isOn: $checkForUpdates)
+            }
         }
         .formStyle(.grouped)
         .frame(width: 460)
@@ -74,6 +89,15 @@ struct SettingsView: View {
             SessionImportView(model: SessionImportModel(), style: .sheet) { _ in importingSignIn = false }
         }
         .onAppear { findle.refresh() }
+        .onReceive(NotificationCenter.default.publisher(for: QuestionStore.didChange)) { _ in
+            showBubbles = Preferences.showQuestionBubbles
+            questionCount = QuestionStore.shared.questions.count
+        }
+        .confirmationDialog("Delete all questions?", isPresented: $confirmingDeleteQuestions) {
+            Button("Delete All", role: .destructive) { QuestionStore.shared.removeAll() }
+        } message: {
+            Text("This removes the bubbles from every PDF. Your chats on chatgpt.com stay.")
+        }
         .confirmationDialog("Sign out of ChatGPT?", isPresented: $confirmingSignOut) {
             Button("Sign Out", role: .destructive) {
                 Task { await ChatGPTSession.signOut() }

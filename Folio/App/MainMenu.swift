@@ -10,6 +10,7 @@ enum MainMenu {
         NSApp.servicesMenu = services
         main.addItem(submenu(name, [
             item("About \(name)", #selector(NSApplication.orderFrontStandardAboutPanel(_:))),
+            item("Check for Updates…", #selector(AppDelegate.checkForUpdates(_:))),
             .separator(),
             item("Settings…", #selector(AppDelegate.showSettings(_:)), ","),
             .separator(),
@@ -77,12 +78,16 @@ enum MainMenu {
             item("Go to Page…", #selector(MainWindowController.readerGoToPage(_:)), "g", [.command, .option]),
         ]))
 
-        main.addItem(submenu("Chat", [
+        let chat = NSMenu.with("Chat", [
             item("Ask About Selection", #selector(MainWindowController.askAboutSelection(_:)), "l"),
             item("Ask About Page", #selector(MainWindowController.askAboutPage(_:)), "l", [.command, .option]),
             item("Attach PDF", #selector(MainWindowController.attachDocument(_:)), "a", [.command, .shift]),
             item("New Chat", #selector(MainWindowController.newChat(_:)), "o", [.command, .shift]),
-        ]))
+            .separator(),
+            QuestionsMenu.shared.item,
+        ])
+        chat.delegate = QuestionsMenu.shared
+        main.addItem(submenuItem("Chat", chat))
 
         let window = NSMenu.with("Window", [
             item("Minimize", #selector(NSWindow.performMiniaturize(_:)), "m"),
@@ -95,7 +100,9 @@ enum MainMenu {
         NSApp.windowsMenu = window
         main.addItem(submenuItem("Window", window))
 
-        let help = NSMenu(title: "Help")
+        let help = NSMenu.with("Help", [
+            item("Report a Problem…", #selector(AppDelegate.reportProblem(_:))),
+        ])
         NSApp.helpMenu = help
         main.addItem(submenuItem("Help", help))
         return main
@@ -126,6 +133,24 @@ enum MainMenu {
 
     private static func arrow(_ key: Int) -> String {
         String(Character(UnicodeScalar(UInt32(key))!))
+    }
+}
+
+/// Chat > Questions on This Page: the questions on the reader's current page, hidden when there are none.
+final class QuestionsMenu: NSObject, NSMenuDelegate {
+    static let shared = QuestionsMenu()
+    let item = ReaderViewController.questionsSubmenuItem([])
+
+    func menuNeedsUpdate(_ menu: NSMenu) {
+        let reader = (NSApp.mainWindow?.windowController as? MainWindowController)?.activeReader
+        let items = reader.flatMap { reader in reader.currentPageIndex.map(reader.questionItems(onPage:)) } ?? []
+        item.submenu?.removeAllItems()
+        items.forEach { item.submenu?.addItem($0) }
+        item.isHidden = items.isEmpty
+        // Hide the separator above it too.
+        if let index = menu.items.firstIndex(of: item), index > 0, menu.items[index - 1].isSeparatorItem {
+            menu.items[index - 1].isHidden = items.isEmpty
+        }
     }
 }
 

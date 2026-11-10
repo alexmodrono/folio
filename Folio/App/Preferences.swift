@@ -10,6 +10,7 @@ enum Preferences {
             "showQuestionBubbles": true,
             "displayMode": 1,
             "showMoodle": true,
+            "checkForUpdates": true,
         ])
     }
 
@@ -62,6 +63,23 @@ enum Preferences {
             defaults.set(newValue, forKey: "showQuestionBubbles")
             NotificationCenter.default.post(name: QuestionStore.didChange, object: nil)
         }
+    }
+
+    /// Looks for a newer release on GitHub at most once a day.
+    static var checkForUpdates: Bool {
+        get { defaults.bool(forKey: "checkForUpdates") }
+        set { defaults.set(newValue, forKey: "checkForUpdates") }
+    }
+
+    static var lastUpdateCheck: Date? {
+        get { defaults.object(forKey: "lastUpdateCheck") as? Date }
+        set { defaults.set(newValue, forKey: "lastUpdateCheck") }
+    }
+
+    /// The newest version already offered automatically, so each one is offered once.
+    static var lastAnnouncedVersion: String? {
+        get { defaults.string(forKey: "lastAnnouncedVersion") }
+        set { defaults.set(newValue, forKey: "lastAnnouncedVersion") }
     }
 
     static var showThumbnails: Bool {

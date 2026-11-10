@@ -147,7 +147,13 @@ struct HomeView: View {
                 } description: {
                     if !folder.isReadOnly { Text("Drop PDFs here, or import them.") }
                 } actions: {
-                    if !folder.isReadOnly { Button("Import PDFs…") { model.importDocuments() } }
+                    if !folder.isReadOnly {
+                        HStack(spacing: Theme.Space.s) {
+                            Button("Import PDFs…") { model.importDocuments() }
+                                .buttonStyle(.borderedProminent)
+                            Button("New Folder") { model.newFolder() }
+                        }
+                    }
                 }
             }
         }

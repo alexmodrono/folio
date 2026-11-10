@@ -22,4 +22,5 @@ final class HomeModel {
 
     @ObservationIgnored var open: (URL) -> Void = { _ in }
     @ObservationIgnored var importDocuments: () -> Void = {}
+    @ObservationIgnored var newFolder: () -> Void = {}
 }

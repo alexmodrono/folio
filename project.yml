@@ -27,6 +27,8 @@ settings:
       DEVELOPMENT_TEAM: 54WRV8QX2U
       ENABLE_HARDENED_RUNTIME: YES
       OTHER_CODE_SIGN_FLAGS: "--timestamp"
+      # Notarization rejects get-task-allow, which Xcode would otherwise add.
+      CODE_SIGN_INJECT_BASE_ENTITLEMENTS: NO
 targets:
   Folio:
     type: application
@@ -51,7 +53,7 @@ targets:
         LSMinimumSystemVersion: $(MACOSX_DEPLOYMENT_TARGET)
         LSApplicationCategoryType: public.app-category.productivity
         NSPrincipalClass: NSApplication
-        NSHumanReadableCopyright: ""
+        NSHumanReadableCopyright: "Folio is not affiliated with, endorsed or sponsored by OpenAI. ChatGPT is a trademark of OpenAI."
         NSMicrophoneUsageDescription: ChatGPT voice input uses the microphone.
         # GitHub repository ("owner/name") whose latest release Folio checks for updates.
         FolioUpdateRepository: alexmodrono/folio

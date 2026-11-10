@@ -2,6 +2,8 @@
 // It only edits the composer the way a person would (attach a file, paste text). It never sends on its own:
 // PDF selections wait as a chip and go into the message when the person sends it.
 (() => {
+  // Sign-in popups (Google, Apple, Microsoft, auth.openai.com) share the card's scripts; stay out of them.
+  if (!/(^|\.)chatgpt\.com$/.test(location.hostname)) return;
   if (window.__folio) return;
 
   // Update these when chatgpt.com changes its markup.
@@ -22,6 +24,8 @@
       'form button[type="submit"][aria-label="Send"]',
       'button[aria-label="Send prompt"]',
     ],
+    // Takes the send button's place while a reply streams. Only the health check uses it.
+    stopButton: ['button[data-testid="stop-button"]', 'form button[aria-label^="Stop"]'],
     userMessage: '[data-user-message-bubble], [data-message-author-role="user"]',
   };
 
@@ -53,17 +57,10 @@
   // The composer's form holds both the text and the attachment chips.
   const scopeOf = (el) => (el && el.closest('form')) || document.body;
 
-  // Counts the file name outside the editable text, so a pasted path doesn't look like an attachment.
-  function signature(name) {
-    const el = composer();
-    const scope = scopeOf(el);
-    const typed = el ? (el.tagName === 'TEXTAREA' ? el.value : el.innerText) : '';
-    const labels = [...scope.querySelectorAll('[aria-label],[title]')]
-      .map((n) => `${n.getAttribute('aria-label') || ''} ${n.getAttribute('title') || ''}`)
-      .join(' ');
-    const chrome = `${scope.innerText.replace(typed, '')} ${labels}`;
-    const nameHits = name ? chrome.split(name).length - 1 : 0;
-    return { nameHits, nodes: scope.querySelectorAll('*').length, text: `${scope.innerText}`.replace(/\s+/g, '') };
+  // The composer form's size and text, to tell whether an edit took.
+  function signature() {
+    const scope = scopeOf(composer());
+    return { nodes: scope.querySelectorAll('*').length, text: `${scope.innerText}`.replace(/\s+/g, '') };
   }
 
   // Signed-out chatgpt.com only accepts images, so file attachments are skipped there.
@@ -102,18 +99,37 @@
     return [...document.querySelectorAll(SELECTORS.fileInput)].find((i) => !i.disabled && accepts(i)) || null;
   }
 
-  // Tries the file input, then a paste, then a drop. Each step waits for a chip with the file name.
+  // Matches an attachment's label: the file name, chatgpt.com's renamed repeats ("name(2).pdf"), and with
+  // `verb`, labels like "Remove name.pdf" or "Uploading name.pdf" on the same tile.
+  function fileLabel(name, verb = false) {
+    const dot = name.lastIndexOf('.');
+    const base = dot > 0 ? name.slice(0, dot) : name;
+    const ext = dot > 0 ? name.slice(dot) : '';
+    const escape = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const pattern = new RegExp(`^${verb ? '(?:\\S+\\s)?' : ''}${escape(base)}(\\s?\\(\\d+\\))?${escape(ext)}$`, 'i');
+    return (el) => pattern.test((el.getAttribute('title') || el.getAttribute('aria-label') || el.getAttribute('alt') || '').trim());
+  }
+  const LABELED = '[title],[aria-label],img[alt]';
+
+  // How many labels in the composer's form name this file: its attachment tiles, not text typed in the composer.
+  function filesInComposer(name) {
+    const el = composer();
+    const form = el && el.closest('form');
+    if (!form) return 0;
+    const named = fileLabel(name, true);
+    return [...form.querySelectorAll(LABELED)].filter((n) => !el.contains(n) && named(n)).length;
+  }
+
+  // Tries the file input, then a paste, then a drop. Each step waits for a tile with the file name.
   async function attachFile(base64, name, mime) {
     const el = await waitFor(composer);
     if (!el) return 'no-composer';
     if (signedOut()) return 'signed-out';
     const file = new File([bytesFrom(base64)], name, { type: mime, lastModified: Date.now() });
-    const before = signature(name);
-    const hasForm = !!el.closest('form');
-    const landed = () => {
-      const now = signature(name);
-      return now.nameHits > before.nameHits || (hasForm && now.nodes >= before.nodes + 3);
-    };
+    const before = filesInComposer(name);
+    // Only a new tile named for the file counts; other DOM changes in the form (a paste of its path as
+    // text, a menu opening) don't.
+    const landed = () => filesInComposer(name) > before;
     const transfer = () => {
       const dt = new DataTransfer();
       dt.items.add(file);
@@ -167,9 +183,9 @@
       return 'textarea';
     }
 
-    const before = signature('');
+    const before = signature();
     const changed = () => {
-      const now = signature('');
+      const now = signature();
       return now.text !== before.text || now.nodes !== before.nodes;
     };
 
@@ -185,21 +201,15 @@
 
   // Where a file with this name already is: 'composer' (waiting to be sent), 'conversation' (sent earlier
   // in this chat), or ''. chatgpt.com renames repeats to "name(2).pdf", so those count too.
+  // Images are labeled by their tile's aria-label and <img alt>.
   async function hasFile(name) {
-    const dot = name.lastIndexOf('.');
-    const base = dot > 0 ? name.slice(0, dot) : name;
-    const ext = dot > 0 ? name.slice(dot) : '';
-    const escape = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const pattern = new RegExp(`^${escape(base)}(\\s?\\(\\d+\\))?${escape(ext)}$`, 'i');
-    const named = (el) => pattern.test((el.getAttribute('title') || el.getAttribute('aria-label') || '').trim());
     const form = composer()?.closest('form');
-    if (form && ([...form.querySelectorAll('[title],[aria-label]')].some(named) || signature(name).nameHits > 0)) {
-      return 'composer';
-    }
+    if (filesInComposer(name) > 0) return 'composer';
     if (!/\/c\/[^/]+/.test(location.pathname)) return '';
     // A conversation's messages render a moment after the page.
     await waitFor(() => document.querySelector(SELECTORS.userMessage), 3000, 100);
-    const sent = [...document.querySelectorAll('[title],[aria-label]')].some((el) => named(el) && !(form && form.contains(el)));
+    const named = fileLabel(name);
+    const sent = [...document.querySelectorAll(LABELED)].some((el) => named(el) && !(form && form.contains(el)));
     return sent ? 'conversation' : '';
   }
 
@@ -446,14 +456,43 @@
 
   // `anchor` says where in which PDF the text came from. It stays in Folio: the message only gets the
   // quote and its source, and the anchor comes back in the "sent" report so Folio can pin a bubble there.
-  function addSelection(text, source, anchor) {
+  // When the chip can't show or there's no send button to hold, the selection goes straight into the
+  // composer as markup text instead, so asking still works. Returns how many selections are waiting
+  // (as chips or text), 0 if none could be added.
+  async function addSelection(text, source, anchor) {
     const quote = clean(text);
     if (!quote) return pending.length;
     const item = { text: quote, source: clean(source || '') };
     if (anchor && typeof anchor === 'object') item.anchor = anchor;
     pending.push(item);
-    syncTray();
-    return pending.length;
+    if (!fallback()) {
+      syncTray();
+      return pending.length;
+    }
+    return (await pasteSelections()) ? 1 : 0;
+  }
+
+  // The chip tray needs the composer's body, and holding a send needs a send button.
+  const fallback = () => !document.querySelector(SELECTORS.composerBody) || sendState === false;
+
+  // Moves waiting selections into the composer as text, after anything already typed.
+  async function pasteSelections() {
+    if (!pending.length) return true;
+    const el = composer();
+    if (!el) return false;
+    // This markup is meant to stay as text, not turn back into a chip.
+    adopted.add(el);
+    const items = pending.splice(0);
+    savePending();
+    const typed = el.tagName === 'TEXTAREA' ? el.value : el.innerText;
+    const gap = !typed.trim() || /\n\s*\n\s*$/.test(typed) ? '' : '\n\n';
+    const result = await insertText(gap + markup(items));
+    if (result === 'failed' || result === 'no-composer') {
+      pending.unshift(...items);
+      savePending();
+      return false;
+    }
+    return true;
   }
 
   function clearSelections() {
@@ -593,7 +632,7 @@
 
   function adoptDraft() {
     const el = composer();
-    if (!el || flushing || adopted.has(el)) return;
+    if (!el || flushing || adopted.has(el) || fallback()) return;
     const text = el.tagName === 'TEXTAREA' ? el.value : el.innerText;
     if (!text.trim()) return;
     adopted.add(el);
@@ -649,6 +688,65 @@
     selectionTimer = setTimeout(reportSelection, 100);
   });
 
+  // MARK: Health
+  //
+  // chatgpt.com changes its markup without notice. Once a page settles, this checks that the parts Folio
+  // relies on are there and tells Folio, which shows a notice when they aren't.
+
+  // Whether a send button showed while the composer had text: true, false, or null (not known yet). The
+  // button only appears once something is typed.
+  let sendState = null;
+  let sendTimer = null;
+  let healthPath = null;
+  let healthTimer = null;
+  let reportedHealth = '';
+
+  const sendCapable = () => !!sendButton() || SELECTORS.stopButton.some((s) => document.querySelector(s));
+
+  async function checkHealth() {
+    clearTimeout(healthTimer);
+    const missing = [];
+    if (/(^|\.)chatgpt\.com$/.test(location.hostname) && !signedOut()) {
+      if (!(await waitFor(composer, 8000, 250))) missing.push('composer');
+      if (!document.querySelector(SELECTORS.composerBody)) missing.push('composerBody');
+      if (sendState === false) missing.push('sendButton');
+    }
+    const report = JSON.stringify(missing);
+    if (report !== reportedHealth) {
+      reportedHealth = report;
+      window.webkit?.messageHandlers?.folio?.postMessage({ type: 'health', ok: !missing.length, missing });
+    }
+    // Selections that can't show as a chip any more go into the composer as text.
+    if (pending.length && fallback()) pasteSelections();
+    return { ok: !missing.length, missing };
+  }
+
+  // Watches for the send button once the person types. Runs on every page change.
+  function watchSend() {
+    if (flushing || !composerText()) {
+      clearTimeout(sendTimer);
+      sendTimer = null;
+      return;
+    }
+    if (sendCapable()) {
+      clearTimeout(sendTimer);
+      sendTimer = null;
+      if (sendState !== true) {
+        sendState = true;
+        checkHealth();
+      }
+      return;
+    }
+    if (sendTimer || sendState === false) return;
+    sendTimer = setTimeout(() => {
+      sendTimer = null;
+      if (composerText() && !sendCapable()) {
+        sendState = false;
+        checkHealth();
+      }
+    }, 1500);
+  }
+
   let scheduled = false;
   function scheduleRefresh() {
     if (scheduled) return;
@@ -659,6 +757,13 @@
       adoptDraft();
       syncTray();
       renderMessages(document);
+      watchSend();
+      if (location.pathname !== healthPath) {
+        // A new page or route: check once it has had time to settle.
+        healthPath = location.pathname;
+        clearTimeout(healthTimer);
+        healthTimer = setTimeout(checkHealth, 3000);
+      }
     }, 50);
   }
 
@@ -684,9 +789,10 @@
     focusComposer,
     startNewChat,
     probe,
+    checkHealth,
     state: (name) => {
-      const s = signature(name);
-      return `${s.nameHits}|${s.nodes}|${s.text.length}`;
+      const s = signature();
+      return `${filesInComposer(name)}|${s.nodes}|${s.text.length}`;
     },
   };
 })();

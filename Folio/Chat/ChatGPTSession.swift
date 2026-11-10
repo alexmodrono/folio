@@ -13,6 +13,8 @@ final class ChatGPTSession: NSObject {
 
     /// Posted when cards are added, removed or focused.
     static let didChangeCards = Notification.Name("ChatGPTSession.didChangeCards")
+    /// Posted (with the session as object) when the bridge finds chatgpt.com missing parts Folio needs, or back.
+    static let didChangeHealth = Notification.Name("ChatGPTSession.didChangeHealth")
 
     static var isLoaded: Bool { !all.isEmpty }
 
@@ -92,6 +94,16 @@ final class ChatGPTSession: NSObject {
     /// Text selected in this card outside the composer, as reported by the bridge.
     private(set) var selectedText = ""
 
+    /// The parts of chatgpt.com the bridge couldn't find (composer, composerBody, sendButton). Empty when
+    /// everything Folio needs is there, or the page hasn't been checked yet.
+    private(set) var missingParts: [String] = [] {
+        didSet {
+            guard missingParts != oldValue else { return }
+            if !missingParts.isEmpty { NSLog("Folio: chatgpt.com is missing \(missingParts.joined(separator: ", "))") }
+            NotificationCenter.default.post(name: Self.didChangeHealth, object: self)
+        }
+    }
+
     let webView: ChatWebView
     private let initialPath: String
 
@@ -130,7 +142,7 @@ final class ChatGPTSession: NSObject {
             }
         }
         let json = (try? JSONSerialization.data(withJSONObject: urls)).flatMap { String(data: $0, encoding: .utf8) } ?? "{}"
-        return "window.__folioIcons = \(json);"
+        return "if (/(^|\\.)chatgpt\\.com$/.test(location.hostname)) window.__folioIcons = \(json);"
     }()
     /// Larger files skip the JavaScript bridge and go through a native paste.
     private static let maxBridgeBytes = 30_000_000
@@ -140,7 +152,8 @@ final class ChatGPTSession: NSObject {
         "login.microsoftonline.com", "login.live.com",
     ]
 
-    /// PDFs in the current chat: attached to the composer, or sent earlier in the conversation.
+    /// What the current chat has, attached to the composer or sent earlier in the conversation: PDF paths,
+    /// and "<pdf path>#page=<n>" for page images from Ask About Page.
     private var attached: Set<String> = []
     private var currentPath = "/"
     private var queue: Task<Void, Never>?
@@ -199,6 +212,8 @@ final class ChatGPTSession: NSObject {
         switch message["type"] as? String {
         case "selection":
             selectedText = message["text"] as? String ?? ""
+        case "health":
+            missingParts = message["missing"] as? [String] ?? []
         case "sent":
             // PDF passages that just went out: pin a bubble for each where it was asked.
             let path = message["path"] as? String ?? "/"
@@ -253,7 +268,7 @@ final class ChatGPTSession: NSObject {
     @discardableResult
     func ask(about text: String, location: String, in document: URL, anchor: PDFAnchor? = nil) async -> Bool {
         await serialized {
-            if !self.attached.contains(document.path) {
+            if await self.needsAttach(document.path, name: document.lastPathComponent) {
                 _ = await self.performAttach(document)
             }
             let name = document.deletingPathExtension().lastPathComponent
@@ -266,12 +281,17 @@ final class ChatGPTSession: NSObject {
     @discardableResult
     func ask(aboutPage text: String, location: String, in document: URL, anchor: PDFAnchor, image: Data?) async -> Bool {
         await serialized {
-            if !self.attached.contains(document.path) {
+            if await self.needsAttach(document.path, name: document.lastPathComponent) {
                 _ = await self.performAttach(document)
             }
             let name = document.deletingPathExtension().lastPathComponent
             if let image {
-                _ = await self.performAttachImage(image, name: "\(name), \(location).png")
+                // One image per page and conversation: asking about the same page again reuses it.
+                let key = "\(document.path)#page=\(anchor.page + 1)"
+                let imageName = "\(name), \(location).png"
+                if await self.needsAttach(key, name: imageName) {
+                    await self.performAttachImage(image, name: imageName, key: key)
+                }
             }
             let quote = text.isEmpty ? "[\(location)]" : text
             return await self.performAddSelection(quote, source: "From \(name), \(location) (whole page)", anchor: anchor)
@@ -321,8 +341,10 @@ final class ChatGPTSession: NSObject {
     }
 
     private func syncNewChat(with document: URL) async {
-        guard document == currentDocument, isNewChat(currentPath), !attached.contains(document.path) else { return }
-        if !attached.isEmpty {
+        guard document == currentDocument, isNewChat(currentPath),
+              await needsAttach(document.path, name: document.lastPathComponent) else { return }
+        // Page images of this PDF can stay; anything from another PDF can't.
+        if attached.contains(where: { Self.documentPath(of: $0) != document.path }) {
             // Another PDF is waiting unsent in this new chat. Start clean if nothing was typed.
             let typed = await call("return window.__folio.composerText()") as? String ?? ""
             guard typed.isEmpty else { return }
@@ -345,14 +367,24 @@ final class ChatGPTSession: NSObject {
         return added > 0
     }
 
-    private func performAttachImage(_ data: Data, name: String) async -> Bool {
+    /// Attaches a page image unless the composer or conversation already shows one by that name.
+    @discardableResult
+    private func performAttachImage(_ data: Data, name: String, key: String) async -> Bool {
         guard await waitForPage() else { return false }
+        let present = await call("return await window.__folio.hasFile(name)", ["name": name]) as? String ?? ""
+        if !present.isEmpty {
+            NSLog("Folio: \(name) is already in the \(present), not attaching again")
+            markAttached(key)
+            return true
+        }
         let result = await call(
             "return await window.__folio.attachFile(data, name, 'image/png')",
             ["data": data.base64EncodedString(), "name": name]
         ) as? String
         NSLog("Folio: attach \(name) via bridge: \(result ?? "error")")
-        return ["input", "paste", "drop"].contains(result ?? "")
+        let landed = ["input", "paste", "drop"].contains(result ?? "")
+        if landed { markAttached(key) }
+        return landed
     }
 
     /// Uploads the PDF unless this chat already has it. Asking and auto-attach skip a PDF that's in the
@@ -363,7 +395,7 @@ final class ChatGPTSession: NSObject {
         let present = await call("return await window.__folio.hasFile(name)", ["name": name]) as? String ?? ""
         if present == "composer" || (present == "conversation" && !explicitly) {
             NSLog("Folio: \(name) is already in the \(present), not attaching again")
-            markAttached(document)
+            markAttached(document.path)
             return true
         }
         guard let data = try? Data(contentsOf: document, options: .mappedIfSafe) else { return false }
@@ -376,7 +408,7 @@ final class ChatGPTSession: NSObject {
             NSLog("Folio: attach \(name) via bridge: \(result ?? "error")")
             switch result {
             case "input", "paste", "drop":
-                markAttached(document)
+                markAttached(document.path)
                 return true
             case "no-composer", "signed-out", nil:
                 return false
@@ -386,7 +418,7 @@ final class ChatGPTSession: NSObject {
         }
         let pasted = await nativePasteFile(document)
         NSLog("Folio: attach \(name) via native paste: \(pasted)")
-        if pasted { markAttached(document) }
+        if pasted { markAttached(document.path) }
         return pasted
     }
 
@@ -467,9 +499,27 @@ final class ChatGPTSession: NSObject {
     /// A conversation's path: "/c/<id>", or "/g/<project>/c/<id>" inside a project.
     private func isConversation(_ path: String) -> Bool { path.contains("/c/") }
 
-    private func markAttached(_ document: URL) {
-        attached.insert(document.path)
+    private func markAttached(_ key: String) {
+        attached.insert(key)
         if isConversation(currentPath) { Self.remember(attached, in: currentPath) }
+    }
+
+    /// The PDF path an `attached` key belongs to.
+    private static func documentPath(of key: String) -> String {
+        key.components(separatedBy: "#page=").first ?? key
+    }
+
+    /// Whether `key` (named `name` in the composer) still has to be attached. In a new chat the person can
+    /// remove a tile before sending, so `attached` is checked against the composer there.
+    private func needsAttach(_ key: String, name: String) async -> Bool {
+        guard attached.contains(key) else { return true }
+        guard isNewChat(currentPath) else { return false }
+        let present = await call("return await window.__folio.hasFile(name)", ["name": name]) as? String
+        // An unreadable page (nil) keeps the old answer rather than uploading again.
+        guard present == "" else { return false }
+        NSLog("Folio: \(name) was removed from the composer, attaching it again")
+        attached.remove(key)
+        return true
     }
 
     /// Which PDFs each conversation has, kept across launches so reopening a chat doesn't upload them again.

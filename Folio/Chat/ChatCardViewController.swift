@@ -12,6 +12,11 @@ final class ChatCardViewController: NSViewController {
     private let closeButton = CardHeaderButton(symbol: "xmark", label: "Hide Chat")
     private var titleObservation: NSKeyValueObservation?
     private var importView: NSView?
+    private let noticeLabel = NSTextField(wrappingLabelWithString: "")
+    private lazy var notice = makeNotice()
+    /// The web view sits under the header, or under the notice while it shows.
+    private var webViewBelowHeader: NSLayoutConstraint?
+    private var webViewBelowNotice: NSLayoutConstraint?
 
     init(session: ChatGPTSession) {
         self.session = session
@@ -36,6 +41,10 @@ final class ChatCardViewController: NSViewController {
         body.addSubview(webView)
         body.addSubview(header)
         body.addSubview(separator)
+        body.addSubview(notice)
+        let belowHeader = webView.topAnchor.constraint(equalTo: body.topAnchor, constant: Theme.panelHeaderHeight + 1)
+        webViewBelowHeader = belowHeader
+        webViewBelowNotice = webView.topAnchor.constraint(equalTo: notice.bottomAnchor)
 
         NSLayoutConstraint.activate([
             card.topAnchor.constraint(equalTo: root.topAnchor),
@@ -52,7 +61,11 @@ final class ChatCardViewController: NSViewController {
             separator.leadingAnchor.constraint(equalTo: body.leadingAnchor),
             separator.trailingAnchor.constraint(equalTo: body.trailingAnchor),
 
-            webView.topAnchor.constraint(equalTo: body.topAnchor, constant: Theme.panelHeaderHeight + 1),
+            notice.topAnchor.constraint(equalTo: separator.bottomAnchor),
+            notice.leadingAnchor.constraint(equalTo: body.leadingAnchor),
+            notice.trailingAnchor.constraint(equalTo: body.trailingAnchor),
+
+            belowHeader,
             webView.bottomAnchor.constraint(equalTo: body.bottomAnchor),
             webView.leadingAnchor.constraint(equalTo: body.leadingAnchor),
             webView.trailingAnchor.constraint(equalTo: body.trailingAnchor),
@@ -61,7 +74,11 @@ final class ChatCardViewController: NSViewController {
         titleObservation = webView.observe(\.title, options: [.new]) { [weak self] _, _ in
             MainActor.assumeIsolated { self?.update() }
         }
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(healthChanged(_:)), name: ChatGPTSession.didChangeHealth, object: session
+        )
         update()
+        updateNotice()
     }
 
     /// Refreshes the title, the active border and the buttons that depend on how many cards there are.
@@ -73,6 +90,71 @@ final class ChatCardViewController: NSViewController {
         let closeLabel = cards > 1 ? "Close Chat" : "Hide Chat"
         closeButton.toolTip = closeLabel
         closeButton.setAccessibilityLabel(closeLabel)
+    }
+
+    // MARK: Notice
+
+    /// A slim bar under the header for when chatgpt.com changed and Folio's features can't fully work.
+    private func makeNotice() -> NSView {
+        let icon = NSImageView(image: NSImage(systemSymbolName: "exclamationmark.triangle", accessibilityDescription: nil) ?? NSImage())
+        icon.contentTintColor = .secondaryLabelColor
+        icon.setContentHuggingPriority(.required, for: .horizontal)
+
+        noticeLabel.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
+        noticeLabel.textColor = .secondaryLabelColor
+        noticeLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+
+        let report = NSButton(title: "Report a Problem", target: nil, action: NSSelectorFromString("reportProblem:"))
+        report.controlSize = .small
+        report.bezelStyle = .push
+        report.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
+        report.setContentHuggingPriority(.required, for: .horizontal)
+        report.setContentCompressionResistancePriority(.required, for: .horizontal)
+
+        let stack = NSStackView(views: [icon, noticeLabel, report])
+        stack.orientation = .horizontal
+        stack.alignment = .centerY
+        stack.spacing = Theme.Space.s
+        stack.edgeInsets = NSEdgeInsets(top: Theme.Space.s, left: Theme.Space.m, bottom: Theme.Space.s, right: Theme.Space.s)
+        stack.translatesAutoresizingMaskIntoConstraints = false
+
+        let line = NSBox()
+        line.boxType = .separator
+        line.translatesAutoresizingMaskIntoConstraints = false
+        let container = NSView()
+        container.translatesAutoresizingMaskIntoConstraints = false
+        container.isHidden = true
+        container.addSubview(stack)
+        container.addSubview(line)
+        NSLayoutConstraint.activate([
+            stack.topAnchor.constraint(equalTo: container.topAnchor),
+            stack.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            stack.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            line.topAnchor.constraint(equalTo: stack.bottomAnchor),
+            line.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            line.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            line.bottomAnchor.constraint(equalTo: container.bottomAnchor),
+        ])
+        return container
+    }
+
+    @objc private func healthChanged(_ note: Notification) {
+        updateNotice()
+    }
+
+    /// Shows or hides the notice from the bridge's last check of chatgpt.com.
+    private func updateNotice() {
+        let missing = session.missingParts
+        if missing.contains("composer") {
+            noticeLabel.stringValue = "Folio can't find ChatGPT's message box, so it can't add your PDF or selections."
+        } else {
+            noticeLabel.stringValue = "Folio can't fully work with this version of ChatGPT. Selections are pasted as text."
+        }
+        let show = !missing.isEmpty
+        guard notice.isHidden == show else { return }
+        notice.isHidden = !show
+        webViewBelowHeader?.isActive = !show
+        webViewBelowNotice?.isActive = show
     }
 
     // MARK: Header

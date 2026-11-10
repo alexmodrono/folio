@@ -30,6 +30,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         controller.showWindow(nil)
         pendingURLs.forEach(controller.open)
         pendingURLs = []
+        // Give the window a moment to settle before a possible alert.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { UpdateChecker.checkAutomaticallyIfDue() }
     }
 
     func application(_ application: NSApplication, open urls: [URL]) {
@@ -63,5 +65,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc func showMainWindow(_ sender: Any?) {
         windowController?.showWindow(nil)
+    }
+
+    @objc func checkForUpdates(_ sender: Any?) {
+        UpdateChecker.checkNow()
+    }
+
+    /// Opens a prefilled GitHub issue. Also sent to nil as `reportProblem:` from the chat panel.
+    @objc func reportProblem(_ sender: Any?) {
+        ProblemReport.open()
     }
 }

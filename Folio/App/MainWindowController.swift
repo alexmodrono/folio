@@ -61,6 +61,7 @@ final class MainWindowController: NSWindowController {
         }
         homeModel.open = { [weak self] url in self?.openFromLibrary(url) }
         homeModel.importDocuments = { [weak self] in self?.importDocuments(nil) }
+        homeModel.newFolder = { [weak self] in self?.newFolder(nil) }
         navigate(.library(nil))
         observeFindle()
     }
@@ -155,6 +156,9 @@ final class MainWindowController: NSWindowController {
         if case .document = route, reader?.hasDocument == true { return true }
         return false
     }
+
+    /// The reader, while a document is open and loaded.
+    var activeReader: ReaderViewController? { isReading ? reader : nil }
 
     private var currentDocumentURL: URL? {
         if case .document(let url) = route { return url }

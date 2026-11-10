@@ -42,7 +42,7 @@
 	<key>LSMinimumSystemVersion</key>
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
 	<key>NSHumanReadableCopyright</key>
-	<string></string>
+	<string>Folio is not affiliated with, endorsed or sponsored by OpenAI. ChatGPT is a trademark of OpenAI.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>ChatGPT voice input uses the microphone.</string>
 	<key>NSPrincipalClass</key>

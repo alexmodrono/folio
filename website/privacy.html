@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Privacy – Folio</title>
+  <meta name="description" content="What Folio does with your data: no accounts, servers, analytics or tracking.">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="./"><img src="favicon.png" alt="" width="28" height="28">Folio</a>
+      <nav aria-label="Site">
+        <a href="privacy.html" aria-current="page">Privacy</a>
+        <a href="https://github.com/alexmodrono/folio">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap doc">
+    <h1>Privacy</h1>
+    <p class="updated">Last updated November 10, 2026</p>
+
+    <p>Folio has no accounts, no servers, no analytics and no tracking. Everything Folio stores stays on your Mac. The sections below list each case where something leaves your Mac, and the one case where Folio reads data from another app.</p>
+
+    <h2>The chat panel</h2>
+    <p>The chat panel is chatgpt.com in a web view, signed in with your own ChatGPT account. What you type, attach and send there goes to OpenAI and is covered by <a href="https://openai.com/policies/privacy-policy/">OpenAI's privacy policy</a> and terms, the same as using chatgpt.com in a browser.</p>
+    <p>Folio attaches the open PDF and puts selected text in the composer only when you ask it to, or automatically when you turn on auto-attach in Settings. Folio never sends a message itself; you always press send.</p>
+
+    <h3>Importing your sign-in</h3>
+    <p>Optionally, Folio can reuse the ChatGPT sign-in from a browser you already use. If you choose this, Folio reads only the chatgpt.com and OpenAI sign-in cookies from the browser you pick, on your Mac. macOS first asks you to allow access to that browser's keychain item; Safari also needs Full Disk Access. The cookies are copied only into Folio's own web view storage and are not sent anywhere else.</p>
+
+    <h2>Question bubbles</h2>
+    <p>When you ask about a page, Folio remembers what you asked and on which page, so it can show a bubble there later. This is saved on your Mac in <code>~/Library/Application Support/Folio/questions.json</code>. Folio never modifies your PDFs.</p>
+
+    <h2>Update check</h2>
+    <p>Once a day, Folio asks GitHub's public API (<code>api.github.com</code>) for information about the latest release. The request carries nothing that identifies you beyond what any web request does, such as your IP address. You can turn this off in Settings.</p>
+
+    <h2>Reporting a problem</h2>
+    <p>Help &gt; Report a Problem opens a pre-filled GitHub issue in your browser with the app version, the macOS version and recent lines from Folio's log. Nothing is sent until you review the issue and submit it yourself on GitHub.</p>
+
+    <h2>Contact</h2>
+    <p>Questions about privacy: <a href="https://github.com/alexmodrono/folio/issues">open an issue on GitHub</a>.</p>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>Works with your own ChatGPT account. Not affiliated with OpenAI.</p>
+      <p><a href="./">Folio</a> · <a href="https://github.com/alexmodrono/folio/issues">Report a problem</a></p>
+    </div>
+  </footer>
+</body>
+</html>

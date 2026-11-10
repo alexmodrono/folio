@@ -7,6 +7,8 @@ import SwiftUI
 final class ReaderPDFView: PDFView {
     /// Called with a bubble the person clicked.
     var onBubbleClick: ((QuestionAnnotation) -> Void)?
+    /// Menu items for the questions on a page (zero-based index), so they can be reached without the pointer.
+    var questionItems: ((Int) -> [NSMenuItem])?
 
     override func menu(for event: NSEvent) -> NSMenu? {
         let menu = super.menu(for: event) ?? NSMenu()
@@ -20,6 +22,9 @@ final class ReaderPDFView: PDFView {
             let item = NSMenuItem(title: "Ask ChatGPT About Page \(index + 1)", action: #selector(MainWindowController.askAboutPage(_:)), keyEquivalent: "")
             item.representedObject = index
             items.append(item)
+            if let questions = questionItems?(index), !questions.isEmpty {
+                items.append(ReaderViewController.questionsSubmenuItem(questions))
+            }
         }
         guard !items.isEmpty else { return menu }
         for (index, item) in (items + [.separator()]).enumerated() { menu.insertItem(item, at: index) }
@@ -172,6 +177,7 @@ final class ReaderViewController: NSViewController {
         center.addObserver(self, selector: #selector(viewStateChanged(_:)), name: .PDFViewScaleChanged, object: pdfView)
         center.addObserver(self, selector: #selector(questionsChanged(_:)), name: QuestionStore.didChange, object: nil)
         pdfView.onBubbleClick = { [weak self] bubble in self?.showPopover(for: bubble) }
+        pdfView.questionItems = { [weak self] index in self?.questionItems(onPage: index) ?? [] }
         refreshBubbles()
     }
 
@@ -268,6 +274,10 @@ final class ReaderViewController: NSViewController {
 
     private func showPopover(for bubble: QuestionAnnotation) {
         guard let page = bubble.page, let question = bubble.question else { return }
+        showPopover(for: question, at: bubble.bounds, on: page)
+    }
+
+    private func showPopover(for question: AskedQuestion, at bounds: CGRect, on page: PDFPage) {
         popover?.close()
         let popover = NSPopover()
         popover.behavior = .transient
@@ -282,9 +292,62 @@ final class ReaderViewController: NSViewController {
                 QuestionStore.shared.remove(question.id)
             }
         ))
-        let rect = pdfView.convert(bubble.bounds, from: page)
+        let rect = pdfView.convert(bounds, from: page)
         popover.show(relativeTo: rect, of: pdfView, preferredEdge: .maxX)
         self.popover = popover
+    }
+
+    /// The page on screen, zero-based.
+    var currentPageIndex: Int? {
+        guard let document = pdfView.document, let page = pdfView.currentPage else { return nil }
+        return document.index(for: page)
+    }
+
+    /// One item per question on page `index`, top to bottom, each opening that question's popover.
+    /// This is how the keyboard and VoiceOver reach bubbles, which are drawn into the page.
+    func questionItems(onPage index: Int) -> [NSMenuItem] {
+        guard let document = pdfView.document, let page = document.page(at: index) else { return [] }
+        let questions = QuestionStore.shared.questions(for: url).filter { $0.anchor.page == index }
+        let crop = page.bounds(for: .cropBox)
+        let ordered = questions.sorted { ($0.anchor.bounds?.maxY ?? crop.maxY) > ($1.anchor.bounds?.maxY ?? crop.maxY) }
+        return ordered.map { question in
+            let item = NSMenuItem(title: Self.menuTitle(for: question), action: #selector(showQuestionFromMenu(_:)), keyEquivalent: "")
+            item.target = self
+            item.representedObject = question.id
+            if !question.question.isEmpty { item.toolTip = question.question }
+            return item
+        }
+    }
+
+    /// "Questions on This Page", holding `items`.
+    static func questionsSubmenuItem(_ items: [NSMenuItem]) -> NSMenuItem {
+        let item = NSMenuItem(title: "Questions on This Page", action: nil, keyEquivalent: "")
+        let menu = NSMenu(title: item.title)
+        items.forEach(menu.addItem)
+        item.submenu = menu
+        return item
+    }
+
+    private static func menuTitle(for question: AskedQuestion) -> String {
+        if question.anchor.isWholePage { return "Page \(question.anchor.page + 1)" }
+        let quote = question.quote.split(whereSeparator: \.isWhitespace).joined(separator: " ")
+        return quote.count > 48 ? "“\(quote.prefix(48))…”" : "“\(quote)”"
+    }
+
+    @objc private func showQuestionFromMenu(_ sender: NSMenuItem) {
+        guard let id = sender.representedObject as? AskedQuestion.ID,
+              let question = QuestionStore.shared.questions.first(where: { $0.id == id }),
+              let page = pdfView.document?.page(at: question.anchor.page) else { return }
+        let onPage = QuestionStore.shared.questions(for: url).filter { $0.anchor.page == question.anchor.page }
+        let shown = page.annotations.first { ($0 as? QuestionAnnotation)?.question?.id == id }
+        // With bubbles hidden, anchor the popover where the bubble would be.
+        guard let bounds = shown?.bounds
+            ?? QuestionAnnotation.bubbles(for: onPage, on: page).first(where: { $0.question?.id == id })?.bounds else { return }
+        pdfView.go(to: bounds.insetBy(dx: -40, dy: -40), on: page)
+        // Wait for the scroll so the popover points at the right place.
+        DispatchQueue.main.async { [weak self] in
+            self?.showPopover(for: question, at: bounds, on: page)
+        }
     }
 
     /// Joins words hyphenated across lines and lines broken inside a paragraph.

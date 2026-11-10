@@ -315,6 +315,7 @@ final class LibraryStore {
         for url in urls where !isReadOnly(url) {
             do {
                 try files.trashItem(at: url, resultingItemURL: nil)
+                QuestionStore.shared.removeDocuments(under: url)
                 let key = relativePath(url)
                 favorites = favorites.filter { $0 != key && !$0.hasPrefix(key + "/") }
             } catch {

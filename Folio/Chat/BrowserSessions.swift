@@ -320,6 +320,8 @@ nonisolated enum BrowserSessions {
             return String(data: blob, encoding: .utf8)
         }
         let cipher = Data(blob.dropFirst(3))
+        // CCCrypt accepts input that isn't whole blocks and reads past it; a real value is always whole blocks.
+        guard !cipher.isEmpty, cipher.count % kCCBlockSizeAES128 == 0 else { return nil }
         let iv = [UInt8](repeating: 0x20, count: kCCBlockSizeAES128)
         var output = [UInt8](repeating: 0, count: cipher.count + kCCBlockSizeAES128)
         var length = 0

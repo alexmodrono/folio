@@ -91,6 +91,13 @@ final class QuestionStore {
         save()
     }
 
+    /// Forgets every question in every PDF, in one save. The PDFs themselves are never touched.
+    func removeAll() {
+        guard !questions.isEmpty else { return }
+        questions = []
+        save()
+    }
+
     /// Keeps questions with their file when Folio renames or moves it, or a folder above it.
     func moveDocuments(from old: URL, to new: URL) {
         let oldPath = old.standardizedFileURL.path
@@ -107,6 +114,14 @@ final class QuestionStore {
             }
         }
         if changed { save() }
+    }
+
+    /// Forgets the questions about `url` when it's trashed, or about any file inside it for a folder.
+    func removeDocuments(under url: URL) {
+        let root = url.standardizedFileURL.path
+        let count = questions.count
+        questions.removeAll { $0.anchor.document == root || $0.anchor.document.hasPrefix(root + "/") }
+        if questions.count != count { save() }
     }
 
     private func save() {
