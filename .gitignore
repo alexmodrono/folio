@@ -1,0 +1,9 @@
+# Build output and generated project
+build/
+Folio.xcodeproj/
+*.xcuserstate
+xcuserdata/
+DerivedData/
+.DS_Store
+# Release artifacts
+dist/
