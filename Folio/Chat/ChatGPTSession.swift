@@ -161,6 +161,8 @@ final class ChatGPTSession: NSObject {
             "fromWholePage": String(localized: "From {doc}, page {n} (whole page)", comment: "Quote source for a whole page"),
             "fromChat": String(localized: "From the chat “{title}”", comment: "Quote source; {title} is a chat title"),
             "fromAnotherChat": String(localized: "From another chat", comment: "Quote source"),
+            "attach": String(localized: "Attach", comment: "Button next to the open PDF's name in a new chat; uploads it"),
+            "dontAttach": String(localized: "Don’t Attach", comment: "Dismisses the offer to attach the open PDF"),
         ]
         let json = (try? JSONSerialization.data(withJSONObject: strings)).flatMap { String(data: $0, encoding: .utf8) } ?? "{}"
         return "if (/(^|\\.)chatgpt\\.com$/.test(location.hostname)) window.__folioStrings = \(json);"
@@ -237,6 +239,17 @@ final class ChatGPTSession: NSObject {
         switch message["type"] as? String {
         case "selection":
             selectedText = message["text"] as? String ?? ""
+        case "attachSuggested":
+            guard let document = currentDocument else { break }
+            Task {
+                if await attach(document) {
+                    _ = await call("return window.__folio.suggestFile(null)")
+                } else {
+                    NSSound.beep()
+                }
+            }
+        case "dismissSuggested":
+            declinedDocument = currentDocument?.path
         case "health":
             missingParts = message["missing"] as? [String] ?? []
         case "sent":
@@ -293,7 +306,7 @@ final class ChatGPTSession: NSObject {
     @discardableResult
     func ask(about text: String, location: String, in document: URL, anchor: PDFAnchor? = nil) async -> Bool {
         await serialized {
-            if await self.needsAttach(document.path, name: document.lastPathComponent) {
+            if Preferences.attachOnAsk, await self.needsAttach(document.path, name: document.lastPathComponent) {
                 _ = await self.performAttach(document)
             }
             let name = document.deletingPathExtension().lastPathComponent
@@ -306,7 +319,7 @@ final class ChatGPTSession: NSObject {
     @discardableResult
     func ask(aboutPage text: String, location: String, in document: URL, anchor: PDFAnchor, image: Data?) async -> Bool {
         await serialized {
-            if await self.needsAttach(document.path, name: document.lastPathComponent) {
+            if Preferences.attachOnAsk, await self.needsAttach(document.path, name: document.lastPathComponent) {
                 _ = await self.performAttach(document)
             }
             let name = document.deletingPathExtension().lastPathComponent
@@ -356,13 +369,32 @@ final class ChatGPTSession: NSObject {
 
     // MARK: Auto-attach
 
+    /// The PDF the person said not to attach to this new chat (the offer's ×). Cleared by a new chat.
+    private var declinedDocument: String?
+
     private func scheduleSync() {
-        guard Preferences.autoAttach, let document = currentDocument, isNewChat(currentPath) else { return }
+        guard let document = currentDocument, isNewChat(currentPath) else {
+            Task { _ = await call("return window.__folio?.suggestFile(null)") }
+            return
+        }
         Task {
             // Let chatgpt.com finish swapping the composer after a route change.
             try? await Task.sleep(for: .milliseconds(300))
-            await serialized { await self.syncNewChat(with: document) }
+            if Preferences.autoAttach {
+                await serialized { await self.syncNewChat(with: document) }
+            } else {
+                await serialized { await self.offer(document) }
+            }
         }
+    }
+
+    /// Shows the open PDF in a new chat's composer with an Attach button, without uploading it.
+    private func offer(_ document: URL) async {
+        guard document == currentDocument, isNewChat(currentPath), await waitForPage() else { return }
+        let name = document.lastPathComponent
+        var wanted = declinedDocument != document.path
+        if wanted { wanted = await needsAttach(document.path, name: name) }
+        _ = await call("return window.__folio.suggestFile(name)", ["name": wanted ? name : NSNull()])
     }
 
     private func syncNewChat(with document: URL) async {
@@ -569,6 +601,7 @@ final class ChatGPTSession: NSObject {
         currentPath = path
         if isNewChat(path) {
             attached = []
+            declinedDocument = nil
             scheduleSync()
         } else if isNewChat(previous), isConversation(path) {
             // The first message turned the new chat into a conversation; its attachments came along.

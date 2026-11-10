@@ -117,7 +117,9 @@
     const form = el && el.closest('form');
     if (!form) return 0;
     const named = fileLabel(name, true);
-    return [...form.querySelectorAll(LABELED)].filter((n) => !el.contains(n) && named(n)).length;
+    // Folio's own chips (the attach offer, selections) carry names too; only chatgpt.com's tiles count.
+    const ours = (n) => n.closest('.folio-suggestion, .folio-selections');
+    return [...form.querySelectorAll(LABELED)].filter((n) => !el.contains(n) && !ours(n) && named(n)).length;
   }
 
   // Tries the file input, then a paste, then a drop. Each step waits for a tile with the file name.
@@ -338,6 +340,15 @@
       opacity: 0.55; cursor: pointer; font-size: 16px; line-height: 24px;
     }
     .folio-remove:hover { opacity: 1; background: color-mix(in srgb, currentColor 10%, transparent); }
+    .folio-suggestion { display: flex; align-items: center; gap: 4px; padding: 10px 12px 0; min-width: 0; }
+    .folio-suggestion .folio-chip { cursor: default; flex: 0 1 auto; min-width: 0; }
+    .folio-suggestion button { flex: none; }
+    .folio-suggestion .folio-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .folio-attach {
+      height: 32px; padding: 0 12px; border-radius: 999px; border: 0; cursor: pointer; color: inherit;
+      font: 500 14px/1 inherit; background: color-mix(in srgb, currentColor 12%, transparent);
+    }
+    .folio-attach:hover { background: color-mix(in srgb, currentColor 18%, transparent); }
     .folio-quotes { display: none; flex-direction: column; gap: 8px; max-width: 100%; }
     .folio-selections[data-open] .folio-quotes { display: flex; }
     .folio-tray .folio-quotes { max-height: 160px; overflow: auto; }
@@ -777,6 +788,63 @@
     }, 1500);
   }
 
+  // Offers the open PDF to a new chat without uploading it: chatgpt.com uploads a file the moment it lands
+  // in the composer, so Folio only attaches when the person clicks Attach (unless auto-attach is on).
+  let suggested = null;
+
+  function suggestFile(name) {
+    suggested = name || null;
+    syncSuggestion();
+    return !!suggested;
+  }
+
+  function syncSuggestion() {
+    const body = document.querySelector(SELECTORS.composerBody);
+    let view = document.querySelector('.folio-suggestion');
+    // Only new chats get the offer; a conversation keeps whatever it already has.
+    const show = suggested && body && /^\/?$/.test(location.pathname);
+    if (!show) {
+      view?.remove();
+      return;
+    }
+    if (view && view.parentElement === body && view.dataset.name === suggested) return;
+    view?.remove();
+    installStyle();
+    view = document.createElement('div');
+    view.className = 'folio-suggestion';
+    view.dataset.name = suggested;
+    const chip = document.createElement('span');
+    chip.className = 'folio-chip';
+    const name = document.createElement('span');
+    name.className = 'folio-name';
+    name.textContent = suggested;
+    chip.append(iconFor([{ source: '' }]), name);
+    chip.title = suggested;
+    const attach = document.createElement('button');
+    attach.type = 'button';
+    attach.className = 'folio-attach';
+    attach.textContent = t('attach', 'Attach');
+    attach.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      window.webkit?.messageHandlers?.folio?.postMessage({ type: 'attachSuggested', name: suggested });
+    });
+    const dismiss = document.createElement('button');
+    dismiss.type = 'button';
+    dismiss.className = 'folio-remove';
+    dismiss.textContent = '×';
+    dismiss.title = t('dontAttach', "Don't attach");
+    dismiss.setAttribute('aria-label', dismiss.title);
+    dismiss.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      window.webkit?.messageHandlers?.folio?.postMessage({ type: 'dismissSuggested', name: suggested });
+      suggestFile(null);
+    });
+    view.append(chip, attach, dismiss);
+    body.prepend(view);
+  }
+
   let scheduled = false;
   function scheduleRefresh() {
     if (scheduled) return;
@@ -786,6 +854,7 @@
       scheduled = false;
       adoptDraft();
       syncTray();
+      syncSuggestion();
       renderMessages(document);
       watchSend();
       if (location.pathname !== healthPath) {
@@ -807,6 +876,7 @@
   window.__folio = {
     attachFile,
     hasFile,
+    suggestFile,
     insertText,
     addSelection,
     revealQuote,

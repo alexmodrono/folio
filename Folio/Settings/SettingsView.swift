@@ -13,7 +13,8 @@ final class SettingsWindowController: NSWindowController {
 }
 
 struct SettingsView: View {
-    @AppStorage("autoAttach") private var autoAttach = true
+    @AppStorage("autoAttach") private var autoAttach = false
+    @AppStorage("attachOnAsk") private var attachOnAsk = true
     @AppStorage("checkForUpdates") private var checkForUpdates = true
     @State private var showBubbles = Preferences.showQuestionBubbles
     @State private var questionCount = QuestionStore.shared.questions.count
@@ -67,6 +68,7 @@ struct SettingsView: View {
             }
             Section("ChatGPT") {
                 Toggle("Attach the open PDF to new chats", isOn: $autoAttach)
+                Toggle("Attach the PDF when asking about it", isOn: $attachOnAsk)
                 Button("Import Sign-In from a Browser…") { importingSignIn = true }
                 Button("Sign Out of ChatGPT…") { confirmingSignOut = true }
             }

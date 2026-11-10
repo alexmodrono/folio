@@ -6,7 +6,9 @@ enum Preferences {
 
     static func registerDefaults() {
         defaults.register(defaults: [
-            "autoAttach": true,
+            // Off: chatgpt.com uploads a file as soon as it's in the composer, so opening a PDF shouldn't.
+            "autoAttach": false,
+            "attachOnAsk": true,
             "showQuestionBubbles": true,
             "displayMode": 1,
             "showMoodle": true,
@@ -29,6 +31,12 @@ enum Preferences {
     static var moodlePath: String? {
         get { defaults.string(forKey: "moodlePath") }
         set { defaults.set(newValue, forKey: "moodlePath") }
+    }
+
+    /// Whether asking about a selection or a page also attaches the whole PDF.
+    static var attachOnAsk: Bool {
+        get { defaults.bool(forKey: "attachOnAsk") }
+        set { defaults.set(newValue, forKey: "attachOnAsk") }
     }
 
     static var autoAttach: Bool {
