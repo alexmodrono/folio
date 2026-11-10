@@ -1,6 +1,7 @@
 name: Folio
 options:
   bundleIdPrefix: app.folio
+  developmentLanguage: en
   deploymentTarget:
     macOS: "26.0"
   createIntermediateGroups: true
@@ -15,6 +16,17 @@ settings:
     ENABLE_HARDENED_RUNTIME: NO
     DEAD_CODE_STRIPPING: YES
     ENABLE_USER_SCRIPT_SANDBOXING: YES
+    CODE_SIGN_ENTITLEMENTS: Folio/Resources/Folio.entitlements
+    ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    LOCALIZATION_PREFERS_STRING_CATALOGS: YES
+    SWIFT_EMIT_LOC_STRINGS: YES
+  configs:
+    # Release builds are signed for distribution outside the App Store and notarized by scripts/release.sh.
+    Release:
+      CODE_SIGN_IDENTITY: "Developer ID Application"
+      DEVELOPMENT_TEAM: 54WRV8QX2U
+      ENABLE_HARDENED_RUNTIME: YES
+      OTHER_CODE_SIGN_FLAGS: "--timestamp"
 targets:
   Folio:
     type: application
@@ -25,7 +37,7 @@ targets:
       base:
         PRODUCT_NAME: Folio
         PRODUCT_BUNDLE_IDENTIFIER: app.folio.Folio
-        MARKETING_VERSION: "0.1"
+        MARKETING_VERSION: "1.0"
         CURRENT_PROJECT_VERSION: "1"
         GENERATE_INFOPLIST_FILE: NO
         INFOPLIST_FILE: Folio/Resources/Info.plist
@@ -41,9 +53,34 @@ targets:
         NSPrincipalClass: NSApplication
         NSHumanReadableCopyright: ""
         NSMicrophoneUsageDescription: ChatGPT voice input uses the microphone.
+        # GitHub repository ("owner/name") whose latest release Folio checks for updates.
+        FolioUpdateRepository: alexmodrono/folio
         CFBundleDocumentTypes:
           - CFBundleTypeName: PDF Document
             CFBundleTypeRole: Viewer
             LSHandlerRank: Alternate
             LSItemContentTypes:
               - com.adobe.pdf
+  FolioTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: FolioTests
+    dependencies:
+      - target: Folio
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.folio.FolioTests
+        GENERATE_INFOPLIST_FILE: YES
+        CODE_SIGN_ENTITLEMENTS: ""
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/Folio.app/Contents/MacOS/Folio
+        BUNDLE_LOADER: $(TEST_HOST)
+schemes:
+  Folio:
+    build:
+      targets:
+        Folio: all
+        FolioTests: [test]
+    test:
+      targets:
+        - FolioTests
