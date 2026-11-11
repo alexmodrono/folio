@@ -1,0 +1,11 @@
+node_modules/
+out/
+# Mixkit audio is fetched by scripts/fetch-mixkit.mjs; its license does not allow redistributing the raw files.
+public/audio/mixkit/
+public/audio/music-bed.wav
+public/audio/cuelume.wav
+public/audio/cuelume-accents.wav
+# Takes recorded with Crono show a real ChatGPT account's demo conversations, so they stay local.
+public/crono/
+# Clips of Apple's aerial wallpapers, cut from the copies macOS downloads; not ours to redistribute.
+public/backgrounds/

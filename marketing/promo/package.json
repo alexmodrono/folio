@@ -1,0 +1,33 @@
+{
+  "name": "folio-launch-film",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "check": "tsc --noEmit",
+    "audio:fetch": "node scripts/fetch-mixkit.mjs",
+    "audio:cuelume": "node scripts/render-cuelume.mjs",
+    "audio": "npm run audio:fetch && npm run audio:cuelume",
+    "render": "remotion render src/index.ts Folio10 out/folio-1.0-unmastered.mp4 --concurrency=50% --codec=h264 --crf=16 --audio-codec=aac --audio-bitrate=320k --pixel-format=yuv420p && node scripts/master.mjs out/folio-1.0-unmastered.mp4 out/folio-1.0.mp4",
+    "still": "remotion still src/index.ts Folio10",
+    "render:audio": "remotion render src/index.ts Folio10 out/folio-1.0-mix.wav --codec=wav",
+    "screenshots": "node scripts/screenshots.mjs"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.539",
+    "@remotion/media-utils": "4.0.539",
+    "cuelume": "0.2.8",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "remotion": "4.0.539"
+  },
+  "devDependencies": {
+    "@remotion/bundler": "4.0.539",
+    "@remotion/renderer": "4.0.539",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "node-web-audio-api": "2.2.0",
+    "typescript": "5.9.3"
+  }
+}
