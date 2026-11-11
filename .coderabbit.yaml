@@ -1,0 +1,56 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+language: en-US
+tone_instructions: "Be concise. Prioritize correctness, privacy and data-loss risks. Explain the triggering case. Skip praise, decorative summaries and formatting that CI already covers."
+early_access: false
+reviews:
+  profile: chill
+  request_changes_workflow: false
+  high_level_summary: false
+  changed_files_summary: false
+  sequence_diagrams: false
+  poem: false
+  in_progress_fortune: false
+  auto_apply_labels: false
+  auto_assign_reviewers: false
+  review_status: true
+  auto_review:
+    enabled: true
+    drafts: false
+    auto_incremental_review: true
+  finishing_touches:
+    docstrings:
+      enabled: false
+    unit_tests:
+      enabled: false
+  path_filters:
+    - "!build/**"
+    - "!dist/**"
+    - "!**/*.xcodeproj/**"
+    - "!**/node_modules/**"
+    - "!**/package-lock.json"
+    - "!docs-site/bun.lock"
+    - "!Folio/Resources/AppIcon.icon/Assets/**"
+    - "!FolioTests/Fixtures/**"
+  path_instructions:
+    - path: "Folio/Resources/chatgpt-bridge.js"
+      instructions: "Runs inside chatgpt.com in an isolated content world. Only the person's own Enter or Send click may send a message: flag anything that submits, queues, retries or schedules a send. Flag reading or exporting the assistant's replies and any call to chatgpt.com's private /backend-api. Selectors belong in SELECTORS at the top of the file; check that a missing selector degrades through the health check instead of throwing."
+    - path: "Folio/Chat/**"
+      instructions: "Check that a PDF is uploaded at most once per conversation and never just because it's open. The bridge must not run on sign-in pages (Google, Apple, Microsoft, auth.openai.com). Check web view lifetimes and that only user clicks change the active chat card."
+    - path: "Folio/Library/**"
+      instructions: "The Findle folder is read-only: flag any rename, move or delete there, and any read of a File Provider placeholder other than to open or download it. Views key items by URL path, never object identity. Disk work must stay off the main actor."
+    - path: "Folio/**/*.swift"
+      instructions: "Swift 6 with MainActor as the default isolation: background work must be nonisolated and run detached. Use semantic system colors and fonts and the 4 pt spacing scale from Folio/Support/Theme.swift. New UI strings need Spanish in Localizable.xcstrings; text sent into chat messages stays English."
+    - path: ".github/workflows/**"
+      instructions: "Check least-privilege tokens, actions pinned to commit SHAs, and fork-safe triggers. Pull request code must never get signing or notarization secrets. Releases must fail on a missing signature, notarization or Sparkle signature."
+    - path: "FolioTests/**"
+      instructions: "Prefer regression tests that reproduce a real failure and assert observable behavior. Tests must use temporary files, never the person's library or questions."
+chat:
+  art: false
+  auto_reply: false
+knowledge_base:
+  code_guidelines:
+    enabled: true
+    filePatterns:
+      - CONTRIBUTING.md
+  learnings:
+    scope: local

@@ -1,0 +1,67 @@
+name: CodeQL
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  schedule:
+    - cron: '23 5 * * 2'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: codeql-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: CodeQL (${{ matrix.language }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # CodeQL reads Swift up to 6.3, so Swift is built with Xcode 26.6 rather than 27.
+          - language: swift
+            runner: macos-26
+            build-mode: manual
+          # The chatgpt.com bridge, the docs site and the launch film.
+          - language: javascript-typescript
+            runner: ubuntu-24.04
+            build-mode: none
+          - language: actions
+            runner: ubuntu-24.04
+            build-mode: none
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Generate the Xcode project
+        if: matrix.language == 'swift'
+        run: |
+          echo 'DEVELOPER_DIR=/Applications/Xcode_26.6.app/Contents/Developer' >> "$GITHUB_ENV"
+          brew install xcodegen
+          xcodegen generate --quiet
+      - uses: github/codeql-action/init@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+          queries: security-extended
+      - name: Build for extraction
+        if: matrix.language == 'swift'
+        run: |
+          set -o pipefail
+          xcodebuild build -project Folio.xcodeproj -scheme Folio -configuration Debug \
+            -destination 'platform=macOS' -derivedDataPath "$RUNNER_TEMP/codeql" \
+            CODE_SIGNING_ALLOWED=NO | tail -5
+      - uses: github/codeql-action/analyze@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4
+        with:
+          category: /language:${{ matrix.language }}
