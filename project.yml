@@ -35,6 +35,12 @@ targets:
     platform: macOS
     sources:
       - path: Folio
+        excludes:
+          - Resources/AppIcon.icon
+      # Icon Composer document; actool compiles it into the app icon with Liquid Glass.
+      - path: Folio/Resources/AppIcon.icon
+        type: file
+        buildPhase: resources
     settings:
       base:
         PRODUCT_NAME: Folio
