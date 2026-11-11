@@ -352,7 +352,11 @@ final class ReaderViewController: NSViewController {
 
     /// Joins words hyphenated across lines and lines broken inside a paragraph.
     static func clean(_ text: String) -> String {
-        text.replacingOccurrences(of: "\r\n", with: "\n")
+        // PDFKit puts an object replacement character where a page has an image; it isn't text.
+        text.replacingOccurrences(of: "\u{FFFC}", with: "")
+            .replacing(#/ {2,}/#) { _ in " " }
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: "\r\n", with: "\n")
             .replacing(#/(\w)-\n(\w)/#) { "\($0.1)\($0.2)" }
             .replacing(#/([^\n])\n(?!\n)/#) { "\($0.1) " }
     }

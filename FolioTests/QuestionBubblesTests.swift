@@ -136,4 +136,10 @@ import Testing
         #expect(ReaderViewController.clean("") == "")
         #expect(ReaderViewController.clean("single line") == "single line")
     }
+
+    @Test func dropsImagePlaceholders() {
+        #expect(ReaderViewController.clean("\u{FFFC} \u{FFFC} Schematic of a plant.") == "Schematic of a plant.")
+        #expect(ReaderViewController.clean("light \u{FFFC} energy") == "light energy")
+        #expect(ReaderViewController.clean("\u{FFFC}") == "")
+    }
 }
