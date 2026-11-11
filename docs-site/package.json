@@ -1,0 +1,20 @@
+{
+  "name": "folio-docs",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/dev.mjs",
+    "serve": "HOST=0.0.0.0 node scripts/dev.mjs",
+    "check": "node scripts/check.mjs"
+  },
+  "dependencies": {
+    "cuelume": "^0.2.8",
+    "highlight.js": "11.12.0",
+    "marked": "18.1.2"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

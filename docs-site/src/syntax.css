@@ -1,0 +1,41 @@
+/* Token colors are generated at build time; theme changes only need CSS. */
+:root {
+  --syntax-keyword: #a62646;
+  --syntax-title: #6639a6;
+  --syntax-value: #0756a1;
+  --syntax-string: #075c3d;
+  --syntax-builtin: #934b00;
+  --syntax-comment: #565d65;
+  --syntax-tag: #236635;
+  --syntax-insert-bg: #daf1df;
+  --syntax-delete-bg: #f8dfe2;
+}
+:root[data-theme=dark] {
+  --syntax-keyword: #ff8e87;
+  --syntax-title: #d2a8ff;
+  --syntax-value: #8abfff;
+  --syntax-string: #a5d6ff;
+  --syntax-builtin: #ffc188;
+  --syntax-comment: #a0a8b1;
+  --syntax-tag: #8deba4;
+  --syntax-insert-bg: #193b26;
+  --syntax-delete-bg: #51252b;
+}
+pre code.hljs { display: block; }
+.hljs-doctag, .hljs-keyword, .hljs-template-tag, .hljs-template-variable,
+.hljs-type, .hljs-variable.language_ { color: var(--syntax-keyword); }
+.hljs-title { color: var(--syntax-title); }
+.hljs-attr, .hljs-attribute, .hljs-literal, .hljs-meta, .hljs-number,
+.hljs-operator, .hljs-variable, .hljs-selector-attr, .hljs-selector-class,
+.hljs-selector-id { color: var(--syntax-value); }
+.hljs-regexp, .hljs-string, .hljs-meta .hljs-string { color: var(--syntax-string); }
+.hljs-meta .hljs-keyword { color: var(--syntax-keyword); }
+.hljs-built_in, .hljs-symbol, .hljs-bullet { color: var(--syntax-builtin); }
+.hljs-comment, .hljs-code, .hljs-formula { color: var(--syntax-comment); }
+.hljs-name, .hljs-quote, .hljs-selector-tag, .hljs-selector-pseudo { color: var(--syntax-tag); }
+.hljs-subst { color: var(--fg); }
+.hljs-section { color: var(--syntax-title); font-weight: 600; }
+.hljs-emphasis { font-style: italic; }
+.hljs-strong { font-weight: 600; }
+.hljs-addition { color: var(--syntax-tag); background: var(--syntax-insert-bg); }
+.hljs-deletion { color: var(--syntax-keyword); background: var(--syntax-delete-bg); }
