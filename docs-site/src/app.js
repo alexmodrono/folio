@@ -158,89 +158,15 @@ let outlinePending = false;
 addEventListener('scroll', () => { if (!outlinePending) { outlinePending = true; requestAnimationFrame(() => { updateOutline(); outlinePending = false; }); } }, { passive: true });
 updateOutline();
 
-// Homepage hero backdrop: the painting drawn once per resize as coarse cells with ordered
-// dithering, a little grain and a dithered dissolve at the bottom, so it reads as texture
-// behind the hero instead of a picture. Without WebGL the pixelated <img> stays.
+// Homepage hero backdrop: when the painting is shorter than the hero text, switch that text
+// back to the theme's colors (hero-short). The painting's box is sized by CSS alone.
 const backdrop = $('.hero-backdrop');
 if (backdrop) {
-  const main = $('main'), hero = $('.hero'), heroText = $('.hero-note') || hero, image = backdrop.querySelector('img'), canvas = backdrop.querySelector('canvas');
-  const gl = canvas.getContext('webgl', { premultipliedAlpha: true, antialias: false });
-  const CELL = 4, BLUR = 10; // CSS px: the size of a pixel block and the soft-focus radius.
-  let fadeStart = 0.8;
-  // The painting's box is sized by CSS alone (full window width, the image's aspect ratio), so
-  // it never changes size after the first paint. This only decides where the dissolve starts
-  // (just below the hero) and, when the painting is shorter than the hero text, switches that
-  // text back to the theme's colors (hero-short).
-  function measure() {
+  const main = $('main'), heroText = $('.hero-note') || $('.hero');
+  const measure = () => {
     const top = main.getBoundingClientRect().top - 56;
-    const height = backdrop.clientHeight;
-    const short = heroText.getBoundingClientRect().bottom - top > height * 0.92;
-    fadeStart = short ? 0.45 : Math.min(0.9, Math.max(0.6, (hero.getBoundingClientRect().bottom - top - 16) / height));
-    document.body.classList.toggle('hero-short', short);
-  }
-  const vertex = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
-  const fragment = `precision mediump float;
-uniform sampler2D img;uniform vec2 res,blur;uniform float cell,fade;
-float b2(vec2 a){a=floor(a);return fract(a.x/2.+a.y*a.y*.75);}
-float bayer(vec2 a){return b2(.5*a)*.25+b2(a);}
-float hash(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}
-float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+1.),f.x),f.y);}
-// A soft-focus read of the painting: 13 taps spread over a disc of radius blur (in uv).
-vec3 soft(vec2 t){vec3 s=texture2D(img,t).rgb;for(int i=0;i<12;i++){float a=float(i)*2.39996,r=sqrt((float(i)+.5)/12.);s+=texture2D(img,t+vec2(cos(a),sin(a))*r*blur).rgb;}return s/13.;}
-void main(){
-  vec2 c=floor(gl_FragCoord.xy/cell);
-  vec2 uv=(c+.5)*cell/res;uv.y=1.-uv.y;
-  vec3 col=soft(uv);
-  float l=dot(col,vec3(.299,.587,.114));
-  col=mix(vec3(l),col,1.2)*.9;
-  vec2 e=(uv-vec2(.5,.38))/vec2(.32,.36);col*=1.-.2*exp(-dot(e,e)*1.5);
-  float d=bayer(c),n=hash(c);
-  col+=(n-.5)*.05;
-  col=floor(col*12.+d)/12.;
-  float edge=uv.y+(noise(c/7.)-.5)*.18;
-  float a=1.-smoothstep(fade,1.,edge);
-  float keep=step(d*.45+n*.55+.001,a);
-  gl_FragColor=vec4(col*keep,keep);
-}`;
-  function compile(type, source) { const shader = gl.createShader(type); gl.shaderSource(shader, source); gl.compileShader(shader); return shader; }
-  function start() {
-    const program = gl.createProgram();
-    gl.attachShader(program, compile(gl.VERTEX_SHADER, vertex));
-    gl.attachShader(program, compile(gl.FRAGMENT_SHADER, fragment));
-    gl.linkProgram(program);
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return;
-    gl.useProgram(program);
-    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-    const position = gl.getAttribLocation(program, 'p');
-    gl.enableVertexAttribArray(position);
-    gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
-    gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-    for (const [key, value] of [[gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, key, value);
-    const uniform = name => gl.getUniformLocation(program, name);
-    let frame;
-    function draw() {
-      frame = null;
-      measure();
-      // Cells are 4 CSS px. Each is drawn as a whole number of buffer pixels, as many as the
-      // screen has (8 on Retina), but never so many that the buffer passes 4096 px: browsers
-      // silently shrink larger WebGL buffers. Sizes are read back from the buffer actually given.
-      const columns = Math.ceil(canvas.clientWidth / CELL), rows = Math.ceil(canvas.clientHeight / CELL);
-      if (!columns || !rows) return;
-      const cell = Math.max(1, Math.floor(Math.min(CELL * (devicePixelRatio || 1), 4096 / columns, 4096 / rows)));
-      canvas.width = columns * cell; canvas.height = rows * cell;
-      gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
-      gl.uniform2f(uniform('res'), gl.drawingBufferWidth, gl.drawingBufferHeight);
-      gl.uniform1f(uniform('cell'), cell * gl.drawingBufferWidth / canvas.width);
-      gl.uniform2f(uniform('blur'), BLUR / canvas.clientWidth, BLUR / canvas.clientHeight);
-      gl.uniform1f(uniform('fade'), fadeStart);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-      backdrop.classList.add('ready');
-    }
-    new ResizeObserver(() => { if (!frame) frame = requestAnimationFrame(draw); }).observe(main);
-    draw();
-  }
+    document.body.classList.toggle('hero-short', heroText.getBoundingClientRect().bottom - top > backdrop.clientHeight * 0.92);
+  };
+  new ResizeObserver(measure).observe(main);
   measure();
-  if (gl) image.complete && image.naturalWidth ? start() : image.addEventListener('load', start, { once: true });
 }
