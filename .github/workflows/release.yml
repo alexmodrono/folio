@@ -24,7 +24,6 @@ jobs:
       contents: write
     env:
       DEVELOPER_DIR: /Applications/Xcode_27.2.app/Contents/Developer
-      KEYCHAIN: ${{ runner.temp }}/release.keychain-db
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -60,6 +59,8 @@ jobs:
           for name in CERTIFICATE_P12_BASE64 CERTIFICATE_PASSWORD APPLE_ID NOTARIZATION_PASSWORD; do
             [ -n "${!name}" ] || { echo "::error::The $name secret is missing"; exit 1; }
           done
+          KEYCHAIN="$RUNNER_TEMP/release.keychain-db"
+          echo "KEYCHAIN=$KEYCHAIN" >> "$GITHUB_ENV"
           PASSWORD=$(uuidgen)
           echo "::add-mask::$PASSWORD"
           echo -n "$CERTIFICATE_P12_BASE64" | base64 --decode -o "$RUNNER_TEMP/certificate.p12"
@@ -68,7 +69,7 @@ jobs:
           security unlock-keychain -p "$PASSWORD" "$KEYCHAIN"
           security import "$RUNNER_TEMP/certificate.p12" -k "$KEYCHAIN" -P "$CERTIFICATE_PASSWORD" -T /usr/bin/codesign
           security set-key-partition-list -S apple-tool:,apple: -k "$PASSWORD" "$KEYCHAIN" > /dev/null
-          security list-keychains -d user -s "$KEYCHAIN" $(security list-keychains -d user | tr -d '"')
+          security list-keychains -d user -s "$KEYCHAIN" "$HOME/Library/Keychains/login.keychain-db"
           rm "$RUNNER_TEMP/certificate.p12"
           xcrun notarytool store-credentials folio-notary --apple-id "$APPLE_ID" --team-id 54WRV8QX2U \
             --password "$NOTARIZATION_PASSWORD" --keychain "$KEYCHAIN"
@@ -99,4 +100,4 @@ jobs:
 
       - name: Remove the keychain
         if: always()
-        run: security delete-keychain "$KEYCHAIN" 2>/dev/null || true
+        run: security delete-keychain "$RUNNER_TEMP/release.keychain-db" 2>/dev/null || true
