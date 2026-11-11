@@ -36,6 +36,19 @@ badge, a serif headline and the not-affiliated line, in two formats:
 The shots, their frames and headlines are in `src/shots.ts`; `src/Screens.tsx`
 draws them.
 
+
+## Banners
+
+`npm run banners` renders `src/Banner.tsx` into `out/banners/` (`npm run banners -- social` renders one): the app icon, name and tagline in Charis SIL on paper, beside a real frame of the `page` take on an aerial wallpaper, with the window running off the panel's left edge so the chat stays in view. Formats and layout are in `src/banners.ts`:
+
+| Format | Size (PNG) | Use |
+| --- | --- | --- |
+| `x-header` | 1500 × 500 (3000 × 1000) | X profile header; nothing in the bottom left, where the profile picture sits |
+| `social` | 1280 × 640 (2560 × 1280) | Open Graph, GitHub social preview, Reddit link previews |
+| `web` | 1920 × 1080 (2560 × 1440) | Website or a Reddit post |
+
+Charis SIL is in `public/fonts/charis/` under the SIL Open Font License (`OFL.txt`).
+
 ## Takes
 
 The interface shots are the real app, recorded with

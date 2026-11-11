@@ -4,6 +4,8 @@ import {AbsoluteFill, Img, staticFile} from 'remotion';
 export const FONT = 'system-ui, -apple-system, "SF Pro Text", "Helvetica Neue", sans-serif';
 // Newsreader (SIL OFL, public/fonts/): a serif drawn for reading on screens.
 export const SERIF = 'Newsreader, "New York", Georgia, serif';
+/** The banners' type (SIL Open Font License, public/fonts/charis/). */
+export const CHARIS = '"Charis SIL", Georgia, serif';
 
 // The icon's colors: teal water, coral and amber sand.
 export const TEAL = '#14a8a0';

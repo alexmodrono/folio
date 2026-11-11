@@ -1,5 +1,7 @@
 import React from 'react';
 import {Composition} from 'remotion';
+import {Banner} from './Banner';
+import {BANNERS, BannerFormat} from './banners';
 import {Film} from './Film';
 import {Screen} from './Screens';
 import {FORMATS, SHOTS} from './shots';
@@ -26,6 +28,19 @@ export const Root: React.FC = () => (
       width={FORMATS[format].width}
       height={FORMATS[format].height}
       defaultProps={{shot: SHOTS[0].id, format}}
+    />
+  ))}
+
+  {(Object.keys(BANNERS) as BannerFormat[]).map((format) => (
+    <Composition
+      key={format}
+      id={`Banner-${format}`}
+      component={Banner}
+      durationInFrames={1}
+      fps={FPS}
+      width={BANNERS[format].width}
+      height={BANNERS[format].height}
+      defaultProps={{format}}
     />
   ))}
   </>
