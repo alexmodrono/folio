@@ -72,7 +72,7 @@ final class ChatGPTSession: NSObject {
     private static func saveCards() {
         Preferences.chatCards = all.map { session in
             let path = session.webView.url?.path ?? session.initialPath
-            return path.isEmpty ? "/" : path
+            return path.isEmpty || isProvisional(path) ? "/" : path
         }
     }
 
@@ -551,10 +551,14 @@ final class ChatGPTSession: NSObject {
 
     // MARK: Conversation tracking
 
-    private func isNewChat(_ path: String) -> Bool { path == "/" || path.isEmpty }
+    /// A new chat's temporary address after its first message, "/c/local-…", until the server assigns its id.
+    /// It only works in this web view, so nothing is remembered under it.
+    nonisolated static func isProvisional(_ path: String) -> Bool { path.contains("/c/local-") }
+
+    private func isNewChat(_ path: String) -> Bool { path == "/" || path.isEmpty || Self.isProvisional(path) }
 
     /// A conversation's path: "/c/<id>", or "/g/<project>/c/<id>" inside a project.
-    private func isConversation(_ path: String) -> Bool { path.contains("/c/") }
+    private func isConversation(_ path: String) -> Bool { path.contains("/c/") && !Self.isProvisional(path) }
 
     private func markAttached(_ key: String) {
         attached.insert(key)
@@ -599,6 +603,8 @@ final class ChatGPTSession: NSObject {
         if Self.all.contains(self) { Self.saveCards() }
         let previous = currentPath
         currentPath = path
+        // The first message is on its way: keep what the new chat has until its real address arrives.
+        if Self.isProvisional(path), isNewChat(previous) { return }
         if isNewChat(path) {
             attached = []
             declinedDocument = nil

@@ -143,3 +143,12 @@ import Testing
         #expect(ReaderViewController.clean("\u{FFFC}") == "")
     }
 }
+
+@Suite struct ConversationPathTests {
+    @Test func newChatsTemporaryAddressIsProvisional() {
+        #expect(ChatGPTSession.isProvisional("/c/local-chatgpt:cc0254a2-6e04-47aa-bada-1c03fadcf9ba"))
+        #expect(!ChatGPTSession.isProvisional("/c/6af47d8b-f9e0-83eb-8770-fc9a62d0e686"))
+        #expect(!ChatGPTSession.isProvisional("/g/g-p-abc/c/6af47d8b-f9e0-83eb-8770-fc9a62d0e686"))
+        #expect(!ChatGPTSession.isProvisional("/"))
+    }
+}

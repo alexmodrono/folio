@@ -410,6 +410,24 @@ enum SyntheticChatGPT {
         #expect(try await page.bool("return window.__folio.revealQuote(q)", ["q": "Something never quoted"]) == false)
     }
 
+    @Test func revealQuoteSkipsHiddenCopies() async throws {
+        let page = BridgePage()
+        let quote = "A passage that chatgpt.com also keeps in a hidden copy of the thread"
+        let message = SyntheticChatGPT.userMessage("{==\(quote)==}{>>From X, page 2<<}\n\nquestion")
+        try await page.load(SyntheticChatGPT.page(messages: [
+            #"<div id="hidden-copy" style="display: none">\#(message)</div>"#,
+            message,
+        ]), path: "/c/abc")
+        _ = try await describe(page)
+        #expect(try await page.int("return document.querySelectorAll('.folio-message-selections').length") == 2)
+        #expect(try await page.bool("return window.__folio.revealQuote(q)", ["q": quote]) == true)
+        let opened = try await page.string("""
+            return [...document.querySelectorAll('.folio-message-selections')]
+              .map((v) => (v.closest('#hidden-copy') ? 'hidden:' : 'shown:') + v.hasAttribute('data-open')).join(',');
+            """)
+        #expect(opened == "hidden:false,shown:true")
+    }
+
     @Test func revealQuoteBeforeRenderIsFalse() async throws {
         let page = BridgePage()
         try await page.load(SyntheticChatGPT.page(), path: "/c/abc")
@@ -470,6 +488,54 @@ enum SyntheticChatGPT {
         try await page.load(SyntheticChatGPT.page(composerText: "please read doc.pdf"))
         #expect(try await hasFile(page, "doc.pdf") == "")
         #expect(try await page.string("return window.__folio.composerText()") == "please read doc.pdf")
+    }
+
+    /// Whether the new-chat offer to attach the open PDF is showing.
+    func offerShows(_ page: BridgePage, _ name: String) async throws -> Bool? {
+        try await page.bool("""
+            window.__folio.suggestFile(name);
+            await sleep(150);
+            return !!document.querySelector('.folio-suggestion');
+            """, ["name": name])
+    }
+
+    @Test func attachOfferShowsInNewChat() async throws {
+        let page = BridgePage()
+        try await page.load(SyntheticChatGPT.page())
+        #expect(try await offerShows(page, "doc.pdf") == true)
+    }
+
+    @Test func attachOfferHidesOnceFileIsInComposer() async throws {
+        let page = BridgePage()
+        try await page.load(SyntheticChatGPT.page(attachments: SyntheticChatGPT.fileChip("doc.pdf")))
+        #expect(try await offerShows(page, "doc.pdf") == false)
+    }
+
+    @Test func attachOfferHidesOnceAMessageIsSent() async throws {
+        // chatgpt.com keeps the "/" address for a moment after the first message goes out.
+        let page = BridgePage()
+        try await page.load(SyntheticChatGPT.page(messages: [SyntheticChatGPT.userMessage("A question")]))
+        #expect(try await offerShows(page, "doc.pdf") == false)
+    }
+}
+
+@MainActor @Suite(.serialized) struct BridgeHealthTests {
+    /// While an attachment finishes uploading after the person sends, chatgpt.com puts a disabled
+    /// "File upload pending" button where the send button was. That isn't a missing send button.
+    @Test func uploadPendingIsNotAMissingSendButton() async throws {
+        let html = SyntheticChatGPT.page(composerText: "Explain this")
+            .replacingOccurrences(
+                of: #"<button type="submit" aria-label="Send" data-testid="send-button">Send</button>"#,
+                with: #"<button type="submit" aria-label="File upload pending" disabled></button>"#
+            )
+        let page = BridgePage()
+        try await page.load(html)
+        // The bridge waits 1.5 s for a send button before it decides there isn't one.
+        let health = try await page.string("""
+            await sleep(1900);
+            return JSON.stringify(await window.__folio.checkHealth());
+            """)
+        #expect(health == #"{"ok":true,"missing":[]}"#)
     }
 }
 

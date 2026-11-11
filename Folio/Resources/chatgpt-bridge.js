@@ -24,8 +24,13 @@
       'form button[type="submit"][aria-label="Send"]',
       'button[aria-label="Send prompt"]',
     ],
-    // Takes the send button's place while a reply streams. Only the health check uses it.
-    stopButton: ['button[data-testid="stop-button"]', 'form button[aria-label^="Stop"]'],
+    // Take the send button's place while a reply streams or an attachment finishes uploading. Only the
+    // health check uses them.
+    stopButton: [
+      'button[data-testid="stop-button"]',
+      'form button[aria-label^="Stop"]',
+      'form button[type="submit"][aria-label="File upload pending"]',
+    ],
     userMessage: '[data-user-message-bubble], [data-message-author-role="user"]',
   };
 
@@ -587,11 +592,15 @@
     if (sent) reportSent(items, question);
   }
 
+  // A conversation's address. A new chat first gets a temporary "/c/local-…" one, which only works in
+  // this tab, until the server assigns its id.
+  const CONVERSATION = /\/c\/(?!local-)[^/]+/;
+
   // Tells Folio which PDF passages went out in which conversation, once a new chat has its /c/ address.
   async function reportSent(items, question) {
     const anchored = items.filter((item) => item.anchor);
     if (!anchored.length) return;
-    const path = (await waitFor(() => (/\/c\/[^/]+/.test(location.pathname) ? location.pathname : null), 15000, 200))
+    const path = (await waitFor(() => (CONVERSATION.test(location.pathname) ? location.pathname : null), 15000, 200))
       || location.pathname;
     window.webkit?.messageHandlers?.folio?.postMessage({ type: 'sent', path, question, items: anchored });
   }
@@ -600,6 +609,8 @@
   function revealQuote(quote) {
     const needle = clean(quote).slice(0, 80);
     for (const view of document.querySelectorAll('.folio-message-selections')) {
+      // chatgpt.com keeps hidden copies of some messages; only the one on screen can be scrolled to.
+      if (!visible(view)) continue;
       const match = [...view.querySelectorAll('.folio-quote')].some((q) => clean(q.querySelector('.folio-quote-text')?.textContent || '').startsWith(needle));
       if (!match) continue;
       view.setAttribute('data-open', '');
@@ -801,8 +812,10 @@
   function syncSuggestion() {
     const body = document.querySelector(SELECTORS.composerBody);
     let view = document.querySelector('.folio-suggestion');
-    // Only new chats get the offer; a conversation keeps whatever it already has.
-    const show = suggested && body && /^\/?$/.test(location.pathname);
+    // Only new chats get the offer, and only until the file is in the composer (asking attaches it too);
+    // a conversation keeps whatever it already has.
+    const show = suggested && body && /^\/?$/.test(location.pathname) && !filesInComposer(suggested)
+      && !document.querySelector(SELECTORS.userMessage);
     if (!show) {
       view?.remove();
       return;
