@@ -31,7 +31,17 @@ $$('.sound-toggle').forEach(button => button.addEventListener('click', async () 
   applySound(enabled);
   if (enabled && await unlock()) play('toggle');
 }));
-$('.pagination a:not(.next)')?.addEventListener('click', () => play('navigate', { direction: 'back' }));
+$('.pagination a:not(.next)')?.addEventListener('click', () => play('select', { theme: 'mech', direction: 'back' }));
+
+let hovered = null;
+document.addEventListener('pointerover', event => {
+  if (event.pointerType !== 'mouse') return;
+  const target = event.target.closest('a[href], button, select, summary, input, label, [role=button]');
+  if (target === hovered) return;
+  hovered = target;
+  if (target && !target.disabled) play('toggle', { theme: 'mech' });
+});
+document.addEventListener('pointerout', event => { if (!event.relatedTarget) hovered = null; });
 
 const collapse = $('.collapse-sidebar');
 function updateCollapse() {
@@ -109,7 +119,7 @@ async function renderSearch() {
   resultContainer.replaceChildren();
   if (!matches.length) emptyState(`No results for “${searchInput.value.trim()}”. Try a different word.`);
   matches.forEach(entry => {
-    const link = document.createElement('a'); link.className = 'search-result'; link.href = entry.url; link.dataset.cuelumeNavigate = '';
+    const link = document.createElement('a'); link.className = 'search-result'; link.href = entry.url; link.dataset.cuelumeNavigate = 'select'; link.dataset.cuelumeTheme = 'mech';
     const title = document.createElement('strong'); title.textContent = entry.title;
     const section = document.createElement('span'); section.textContent = ` › ${entry.section}`;
     const excerpt = document.createElement('p'); excerpt.textContent = entry.text.replace(/\s+/g, ' ').slice(0, 155) + (entry.text.length > 155 ? '…' : '');
