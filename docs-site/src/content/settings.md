@@ -16,7 +16,7 @@ Open **Folio › Settings…** (⌘,).
 | Questions | **Delete All Questions…** | |
 | Updates | **Check for updates automatically** | On |
 
-The update check looks at Folio's latest GitHub release once a day and only shows a notice. You download and install updates yourself. **Folio › Check for Updates…** checks right away.
+Once a day, Folio checks its latest GitHub release for a new version. When there is one, it shows what's new and installs the update only if you choose **Install Update**. **Folio › Check for Updates…** checks right away.
 
 ## Keyboard shortcuts
 

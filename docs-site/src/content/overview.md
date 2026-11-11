@@ -50,7 +50,7 @@ Folio shows chatgpt.com in a panel next to your PDF, signed in with your own Cha
 - **You press Send.** Folio fills the message box. Only your Return or your click sends.
 - **One upload per chat.** Folio checks the conversation before attaching a PDF again.
 - **Up to four chats.** Side by side or stacked, each with its own conversation.
-- **Small and native.** Built with AppKit and PDFKit, with no third-party code.
+- **Small and native.** Built with AppKit and PDFKit. Sparkle installs updates when you say so.
 - **English and Spanish.** The app follows your Mac's language.
 
 [Sign in to ChatGPT →](/sign-in/)

@@ -522,16 +522,6 @@
         }
       }
     },
-    "Couldn’t check for updates.": {
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No se han podido buscar actualizaciones."
-          }
-        }
-      }
-    },
     "Courses": {
       "localizations": {
         "es": {
@@ -770,26 +760,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Carpeta"
-          }
-        }
-      }
-    },
-    "Folio %@ is available.": {
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Folio %@ ya está disponible."
-          }
-        }
-      }
-    },
-    "Folio %@ is the latest version.": {
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Folio %@ es la versión más reciente."
           }
         }
       }
@@ -1249,36 +1219,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sin coincidencias"
-          }
-        }
-      }
-    },
-    "No release was found.": {
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No se ha encontrado ninguna versión."
-          }
-        }
-      }
-    },
-    "No update source is set.": {
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No hay ninguna fuente de actualizaciones."
-          }
-        }
-      }
-    },
-    "Not Now": {
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ahora no"
           }
         }
       }
@@ -1871,17 +1811,6 @@
         }
       }
     },
-    "The server answered with status %lld.": {
-      "comment": "HTTP status code",
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "El servidor respondió con el estado %lld."
-          }
-        }
-      }
-    },
     "This PDF is locked.": {
       "localizations": {
         "es": {
@@ -2030,16 +1959,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tu Mac te pedirá la contraseña para que Folio pueda usar “%@”."
-          }
-        }
-      }
-    },
-    "You’re up to date.": {
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Folio está actualizado."
           }
         }
       }

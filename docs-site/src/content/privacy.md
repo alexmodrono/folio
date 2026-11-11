@@ -18,7 +18,7 @@ Folio saves what you asked and on which page in `~/Library/Application Support/F
 
 ## Update check
 
-Once a day, Folio asks GitHub's public API (`api.github.com`) about the latest release. The request carries nothing that identifies you beyond what any web request does, such as your IP address. Turn it off in **Settings › Updates**.
+Once a day, Folio downloads a small file from its latest GitHub release that describes the newest version. The request carries the app's name and version and nothing else that identifies you beyond what any web request does, such as your IP address. Updates are downloaded from GitHub only when you choose to install one, and Folio checks their signature before installing. Turn the check off in **Settings › Updates**.
 
 ## Reporting a problem
 

@@ -29,6 +29,12 @@ settings:
       OTHER_CODE_SIGN_FLAGS: "--timestamp"
       # Notarization rejects get-task-allow, which Xcode would otherwise add.
       CODE_SIGN_INJECT_BASE_ENTITLEMENTS: NO
+packages:
+  # The only third-party dependency: installs updates. Pinned exactly because the generated
+  # project (and its Package.resolved) isn't checked in.
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    exactVersion: 2.10.1
 targets:
   Folio:
     type: application
@@ -41,6 +47,8 @@ targets:
       - path: Folio/Resources/AppIcon.icon
         type: file
         buildPhase: resources
+    dependencies:
+      - package: Sparkle
     settings:
       base:
         PRODUCT_NAME: Folio
@@ -63,8 +71,14 @@ targets:
         NSPrincipalClass: NSApplication
         NSHumanReadableCopyright: "Folio is not affiliated with, endorsed or sponsored by OpenAI. ChatGPT is a trademark of OpenAI."
         NSMicrophoneUsageDescription: ChatGPT voice input uses the microphone.
-        # GitHub repository ("owner/name") whose latest release Folio checks for updates.
-        FolioUpdateRepository: alexmodrono/folio
+        # GitHub repository ("owner/name") where Help > Report a Problem opens issues.
+        FolioRepository: alexmodrono/folio
+        # Sparkle: the appcast is an asset of the latest GitHub release (made by .github/workflows/release.yml),
+        # signed with the EdDSA key whose public half is below.
+        SUFeedURL: https://github.com/alexmodrono/folio/releases/latest/download/appcast.xml
+        SUPublicEDKey: cUI4hLg1WlIEojZT2D9NGn9NSvokEQyMayDEfWaFck8=
+        SUEnableAutomaticChecks: true
+        SUScheduledCheckInterval: 86400
         CFBundleDocumentTypes:
           - CFBundleTypeName: PDF Document
             CFBundleTypeRole: Viewer

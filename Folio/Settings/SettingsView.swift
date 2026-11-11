@@ -15,7 +15,7 @@ final class SettingsWindowController: NSWindowController {
 struct SettingsView: View {
     @AppStorage("autoAttach") private var autoAttach = false
     @AppStorage("attachOnAsk") private var attachOnAsk = true
-    @AppStorage("checkForUpdates") private var checkForUpdates = true
+    @State private var checkForUpdates = Updater.checksAutomatically
     @State private var showBubbles = Preferences.showQuestionBubbles
     @State private var questionCount = QuestionStore.shared.questions.count
     @State private var confirmingDeleteQuestions = false
@@ -81,7 +81,10 @@ struct SettingsView: View {
                     .disabled(questionCount == 0)
             }
             Section("Updates") {
-                Toggle("Check for updates automatically", isOn: $checkForUpdates)
+                Toggle("Check for updates automatically", isOn: Binding(
+                    get: { checkForUpdates },
+                    set: { checkForUpdates = $0; Updater.checksAutomatically = $0 }
+                ))
             }
         }
         .formStyle(.grouped)

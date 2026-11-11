@@ -1,6 +1,6 @@
 # Build from source
 
-Folio is a native AppKit app with no third-party dependencies. You need **Xcode 26** and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
+Folio is a native AppKit app. Its only third-party dependency is [Sparkle](https://sparkle-project.org), which installs updates. You need **Xcode 27** and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
 
 ## Get the code
 
@@ -20,7 +20,7 @@ scripts/run.sh              # build and launch the Debug app, logs in the termin
 scripts/test.sh             # unit tests
 ```
 
-`scripts/build.sh Release` makes a Release build, which needs a Developer ID certificate.
+`scripts/build.sh Release` makes a Release build, which needs a Developer ID certificate. Debug builds never check for updates.
 
 ## Try it without your library
 

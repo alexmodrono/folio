@@ -40,7 +40,7 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
-	<key>FolioUpdateRepository</key>
+	<key>FolioRepository</key>
 	<string>alexmodrono/folio</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.productivity</string>
@@ -52,5 +52,13 @@
 	<string>ChatGPT voice input uses the microphone.</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
+	<key>SUFeedURL</key>
+	<string>https://github.com/alexmodrono/folio/releases/latest/download/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>cUI4hLg1WlIEojZT2D9NGn9NSvokEQyMayDEfWaFck8=</string>
+	<key>SUScheduledCheckInterval</key>
+	<integer>86400</integer>
 </dict>
 </plist>

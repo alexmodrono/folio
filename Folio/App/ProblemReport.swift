@@ -8,8 +8,23 @@ enum ProblemReport {
     private static let maxURLLength = 7000
     nonisolated private static let maxLogLines = 40
 
+    /// "owner/name", from `FolioRepository` in Info.plist.
+    static var repository: String? {
+        let value = Bundle.main.object(forInfoDictionaryKey: "FolioRepository") as? String
+        let trimmed = value?.trimmingCharacters(in: .whitespaces) ?? ""
+        return trimmed.isEmpty ? nil : trimmed
+    }
+
+    private static var version: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0"
+    }
+
+    private static var build: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "0"
+    }
+
     static func open() {
-        guard let repository = UpdateChecker.repository else {
+        guard let repository else {
             NSSound.beep()
             return
         }
@@ -73,7 +88,7 @@ enum ProblemReport {
 
 
         ---
-        - Folio \(UpdateChecker.currentVersion) (\(UpdateChecker.currentBuild))
+        - Folio \(version) (\(build))
         - macOS \(systemVersion)
         - Chat cards: \(chatCardCount)
         """

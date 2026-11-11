@@ -2,7 +2,7 @@ import AppKit
 import UniformTypeIdentifiers
 
 @main
-final class AppDelegate: NSObject, NSApplicationDelegate {
+final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuItemValidation {
     static func main() {
         let app = NSApplication.shared
         let delegate = AppDelegate()
@@ -30,8 +30,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         controller.showWindow(nil)
         pendingURLs.forEach(controller.open)
         pendingURLs = []
-        // Give the window a moment to settle before a possible alert.
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { UpdateChecker.checkAutomaticallyIfDue() }
+        Updater.start()
     }
 
     func application(_ application: NSApplication, open urls: [URL]) {
@@ -68,7 +67,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc func checkForUpdates(_ sender: Any?) {
-        UpdateChecker.checkNow()
+        Updater.checkNow()
+    }
+
+    func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
+        if menuItem.action == #selector(checkForUpdates(_:)) { return Updater.canCheck }
+        return true
     }
 
     /// Opens a prefilled GitHub issue. Also sent to nil as `reportProblem:` from the chat panel.
