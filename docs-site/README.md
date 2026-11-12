@@ -24,7 +24,7 @@ The site is generated into `dist/`. The check verifies internal links and anchor
 
 ## Deploy
 
-`npm run deploy` builds with `.env.production`, runs the check, and uploads `dist/` to Cloudflare Pages (project `folio-docs`, configured in `wrangler.jsonc`; sign in once with `npx wrangler login`). `.github/workflows/pages.yml` runs it on every push to main that touches `docs-site/`, with the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` secrets. `pdf.amodrono.com` is a custom domain on that project, through a CNAME at OVH to `folio-docs-9m1.pages.dev`. `public/_headers` sets the response headers.
+`npm run deploy` builds with `.env.production`, runs the check, and deploys `dist/` as the `folio-docs` Worker (static assets only, configured in `wrangler.jsonc`; sign in once with `npx wrangler login`). `pdf.amodrono.com` is its custom domain, set in `wrangler.jsonc`, which also manages the DNS record in the amodrono.com zone. `.github/workflows/pages.yml` runs it on every push to main that touches `docs-site/`, with the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` secrets. `public/_headers` sets the response headers; unknown paths get `404.html`. The build is also at https://folio-docs.amodrono.workers.dev.
 
 Page views go to the self-hosted Umami server at analytics.amodrono.com (website "Folio"). The tag is added only when `UMAMI_WEBSITE_ID` is set, which `.env.production` does for `npm run build:production` and `npm run deploy`; `npm run build` and `npm run dev` go without it, so local visits don't count.
 

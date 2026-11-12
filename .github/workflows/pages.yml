@@ -1,8 +1,8 @@
 name: Website
 
-# Builds docs-site/ (with Umami, from .env.production) and publishes it to Cloudflare Pages
-# (project folio-docs) at https://pdf.amodrono.com through `npm run deploy`.
-# Needs the CLOUDFLARE_API_TOKEN (Account → Cloudflare Pages → Edit) and CLOUDFLARE_ACCOUNT_ID secrets.
+# Builds docs-site/ (with Umami, from .env.production) and deploys it as the folio-docs Worker
+# (static assets) at https://pdf.amodrono.com through `npm run deploy`.
+# Needs the CLOUDFLARE_API_TOKEN (Workers Scripts and Workers Routes: Edit) and CLOUDFLARE_ACCOUNT_ID secrets.
 on:
   push:
     branches: [main]
@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     environment:
-      name: cloudflare-pages
+      name: cloudflare
       url: https://pdf.amodrono.com
     defaults:
       run:
