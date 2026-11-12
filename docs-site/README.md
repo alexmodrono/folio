@@ -22,6 +22,12 @@ npm run check
 
 The site is generated into `dist/`. The check verifies internal links and anchors, assets, metadata, unique IDs, Markdown endpoints, search coverage, and that highlighted code copies exactly.
 
+## Deploy
+
+`npm run deploy` builds with `.env.production`, runs the check, and uploads `dist/` to Cloudflare Pages (project `folio-docs`, configured in `wrangler.jsonc`; sign in once with `npx wrangler login`). `.github/workflows/pages.yml` runs it on every push to main that touches `docs-site/`, with the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` secrets. `pdf.amodrono.com` is a custom domain on that project, through a CNAME at OVH to `folio-docs-9m1.pages.dev`. `public/_headers` sets the response headers.
+
+Page views go to the self-hosted Umami server at analytics.amodrono.com (website "Folio"). The tag is added only when `UMAMI_WEBSITE_ID` is set, which `.env.production` does for `npm run build:production` and `npm run deploy`; `npm run build` and `npm run dev` go without it, so local visits don't count.
+
 ## Edit
 
 - `src/content/*.md`: the guides. `overview.md` is the homepage; its `#` heading is replaced by the hero.

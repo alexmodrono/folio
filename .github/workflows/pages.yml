@@ -1,6 +1,8 @@
 name: Website
 
-# Builds docs-site/ and publishes it to GitHub Pages at https://pdf.amodrono.com.
+# Builds docs-site/ (with Umami, from .env.production) and publishes it to Cloudflare Pages
+# (project folio-docs) at https://pdf.amodrono.com through `npm run deploy`.
+# Needs the CLOUDFLARE_API_TOKEN (Account → Cloudflare Pages → Edit) and CLOUDFLARE_ACCOUNT_ID secrets.
 on:
   push:
     branches: [main]
@@ -17,9 +19,12 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    environment:
+      name: cloudflare-pages
+      url: https://pdf.amodrono.com
     defaults:
       run:
         working-directory: docs-site
@@ -33,23 +38,7 @@ jobs:
           cache: npm
           cache-dependency-path: docs-site/package-lock.json
       - run: npm ci
-      - run: npm run build
-      - run: npm run check
-      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
-      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
-        with:
-          path: docs-site/dist
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+      - run: npm run deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

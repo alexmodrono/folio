@@ -26,4 +26,4 @@ Once a day, Folio downloads a small file from its latest GitHub release that des
 
 ## This website
 
-This site bundles its fonts and runs search locally. It has no analytics. Theme, sound, and sidebar preferences are saved in your browser. Download and source links go to GitHub.
+This site bundles its fonts and runs search locally. It counts page views with a self-hosted [Umami](https://umami.is) server: no cookies, no personal data, and nothing is recorded when your browser sends Do Not Track. The app itself has no analytics. Theme, sound, and sidebar preferences are saved in your browser. Download and source links go to GitHub.

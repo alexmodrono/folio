@@ -1,0 +1,7 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Cloudflare Pages project for https://pdf.amodrono.com (custom domain, CNAME at OVH).
+  "name": "folio-docs",
+  "compatibility_date": "2026-10-01",
+  "pages_build_output_dir": "./dist"
+}
